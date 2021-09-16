@@ -1,0 +1,1 @@
+This directory contains all the libs and includes of wxWidgets. This will probably differ for many PCs and there are 2 many files to upload.
