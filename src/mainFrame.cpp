@@ -100,7 +100,6 @@ void mainFrame::onExit(wxCommandEvent& evt)
 void mainFrame::onSet(wxCommandEvent& evt)
 {
     wxPoint pos = this->GetPosition();
-    this->Enable(false);
     setMgr = new SetMgr(this, wxPoint(pos.x + 30, pos.y + 30), wxSize(640, 480), theme);
     setMgr->Show();
 }
@@ -157,6 +156,7 @@ void mainFrame::choice(wxCommandEvent& evt)
 
             if (len != 0)
             {
+                logs->Clear();
                 ifstream file(entryFP[0]);
                 readFile(file, fileRop, logs, 0, 0, true);
             }
@@ -166,6 +166,9 @@ void mainFrame::choice(wxCommandEvent& evt)
             addLog->Destroy();
             entries = nullptr;
             addLog = nullptr;
+
+            ifstream file(folderN + fsep + "LastLogs.baka");
+            readTrackerFile(file, LogList, logs);
 
             lastLogs = new wxButton(this, ID_BTN1, "&Show Last 10 Logs", wxPoint(10, 10 + 50));
             allLogs = new wxButton(this, ID_BTN2, "&Show All Logs Saved", wxPoint(10, 50 + 50));
@@ -182,6 +185,7 @@ void mainFrame::entryChoice(wxCommandEvent& evt)
 
     if (Eindex != prevEindex) {
         ifstream file(entryFP[Eindex]);
+        logs->Clear();
         readFile(file, fileRop, logs, 0, 0, true);
         prevEindex = Eindex;
     }
@@ -190,7 +194,9 @@ void mainFrame::entryChoice(wxCommandEvent& evt)
 // add the entry button
 void mainFrame::addE(wxCommandEvent& evt)
 {
-    addEntry = new AddE(this, "Add New Entry", fileRop, wxSize(480, 320));
+    wxPoint pos = this->GetPosition();
+
+    addEntry = new AddE(this, ("Add New Log for " + entryList[entries->GetSelection()] + " in genre " + genres[list->GetSelection()]), fileRop, entryList[entries->GetSelection()], wxPoint(pos.x + 30, pos.y + 30), wxSize(480, 320));
     addEntry->Show();
 }
 
