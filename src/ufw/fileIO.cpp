@@ -1,5 +1,6 @@
 #include "fileIO.h"
 
+// check if the string is empty or not
 bool isspace(str& string1) {
     const char* c = string1.c_str();
 
@@ -168,52 +169,39 @@ void readFile(ifstream& file, ReadOptions options, wxTextCtrl* logDisp, int hist
             case Others:
                 if (counter == 2)
                     (*logDisp) << "Details and Remarks:\n";
-                // prl("Details and Remarks:");
-                // prl(line);
                 (*logDisp) << line << "\n";
                 break;
             case Anime:
                 if (counter == 2)
                     (*logDisp) << "Season:    " << line << "\n";
-                // prl("Season:\t\t" << line);
                 else if (counter == 3)
                     (*logDisp) << "Episode:    " << line << "\n";
-                // prl("Episode:\t" << line);
                 else {
                     if (counter == 4)
                         (*logDisp) << "Details and Remarks:\n";
-                    // prl("Details and Remarks:");
                     (*logDisp) << line << "\n";
-                    // prl(line);
                 }
                 break;
 
             case Manga:
                 if (counter == 2)
                     (*logDisp) << "Last Chapter read:    " << line << "\n";
-                // prl("Last Chapter read:\t\t" << line);
                 else if (counter == 3)
                     (*logDisp) << "Page read last:    " << line << "\n";
-                // prl("Page read last:\t\t" << line);
                 else {
                     if (counter == 4)
                         (*logDisp) << "Details and Remarks:\n";
-                    // prl("Details and Remarks:");
                     (*logDisp) << line << "\n";
-                    // prl(line);
                 }
                 break;
 
             case Movies:
                 if (counter == 2)
                     (*logDisp) << "Part Last seen:    " << line << "\n";
-                    // prl("Part last seen:\t" << line);
                 else {
                     if (counter == 3)
                         (*logDisp) << "Details and Remarks:" << "\n";
-                    // prl("Details and Remarks:");
                     (*logDisp) << line << "\n";
-                    // prl(line);
                 }
             }
             hasContent = true;
@@ -279,7 +267,6 @@ void readTrackerFile(ifstream& file, TrackerFileOptions tfo, wxTextCtrl* logDisp
                     else
                         readFile(file, Others, logDisp, 1, 1);
                     (*logDisp) << "====================\n";
-                    // (*logDisp) << "--------------------\n";
                 }
                 isGenN *= 0;
             }
@@ -364,6 +351,7 @@ void writeToll(str& data, str& genre) {
     ofstream fileW(tempFilePaf);
 
     fileW << (char)1 << endl;
+    
     // write to temp file
     {
         str temp = "";
@@ -384,7 +372,7 @@ void writeToll(str& data, str& genre) {
         char c = (char)1;
 
         while (getline(fileRe, temp) && count < 20) {
-            if (temp.find(c) != str::npos) // darn it, stupid me...
+            if (temp.find(c) != str::npos)
                 count++;
             fileReW << temp << endl;
         }
@@ -392,6 +380,7 @@ void writeToll(str& data, str& genre) {
     }
     fs::remove(tempFilePaf);
 }
+
 
 // a really inefficient way of writing to the starting of file
 void writeFile(str paf, str& data, str genre, int option, str name) {
