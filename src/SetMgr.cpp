@@ -12,6 +12,8 @@ SetMgr::SetMgr(wxWindow* frame, const wxPoint& pos, const wxSize& size, wxColor*
     :
     wxFrame(frame, 69, "Settings Manager", pos, size, wxDEFAULT_FRAME_STYLE | wxFRAME_FLOAT_ON_PARENT) {
 
+    __frame = frame;
+
     pane = new wxPanel(this, 85);
     pane->SetBackgroundColour(*theme);
 
@@ -101,4 +103,6 @@ SetMgr::~SetMgr() {
     okaiBai = nullptr;
     apply = nullptr;
     cancel = nullptr;
+
+    __frame->Enable(true);
 }

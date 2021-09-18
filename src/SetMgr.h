@@ -12,6 +12,8 @@ private:
     bool choices[2] = { 1,1 };
     bool ps[2] = { 1,1 };
 
+    wxWindow* __frame = nullptr;
+
     wxPanel* pane = nullptr;
     // wxStaticText* pmpt = nullptr;
     wxCheckBox* cdf = nullptr; // cdf = create(c) default(d) folders(f)
