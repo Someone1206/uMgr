@@ -122,8 +122,11 @@ void mainFrame::choice(wxCommandEvent& evt)
             entryList = nullptr;
             entryFP = nullptr;
 
+            if (entries != nullptr)
+                entries->Destroy();
+            entries = nullptr;
+
             int len = entriesNGenres((folderN + fsep + opt), true);
-            // addLog = new wxButton(this, ID_ADDLOG, "&Add Log", wxPoint(10, 10 + 50 + 50), wxDefaultSize);
             
             if (addLog == nullptr)
                 addLog = new wxButton(this, ID_ADDLOG, "&Add Log", wxPoint(10, 10 + 50 + 50), wxDefaultSize);
@@ -132,23 +135,13 @@ void mainFrame::choice(wxCommandEvent& evt)
                 entryList = new wxString[len];
                 entryFP = new str[len];
                 readTrackerFile(emptyFile, Entries, emptyText, 0, entryList, (folderN + fsep + opt), false, entryFP);
-                if (entries == nullptr)
-                    entries = new wxChoice(this, ID_E_LIST, wxPoint(10, 10 + 50), wxDefaultSize, len, entryList);
-                else
-                {
-                    entries->SetColumns(len);
-                    for (int i = 0; i < len; i++)
-                    {
-                        entries->SetString(i, entryList[i]);
-                    }
-                }
+                entries = new wxChoice(this, ID_E_LIST, wxPoint(10, 10 + 50), wxDefaultSize, len, entryList);
                 entries->SetSelection(0);
                 addLog->Enable(true);
             }
             else {
                 wxString noEntries[1] = { "No Entries Made" };
-                if (entries == nullptr)
-                    entries = new wxChoice(this, ID_E_LIST, wxPoint(10, 10 + 50), wxDefaultSize, 1, noEntries);
+                entries = new wxChoice(this, ID_E_LIST, wxPoint(10, 10 + 50), wxDefaultSize, 1, noEntries);
                 entries->SetSelection(0);
                 addLog->Enable(false);
             }
