@@ -22,6 +22,8 @@ uMgrData/
 extDependencies/**/include/
 extDependencies/**/lib/
 
+.vscode/
+
 # User-specific files
 *.rsuser
 *.suo
