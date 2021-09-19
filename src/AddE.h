@@ -1,6 +1,7 @@
 #pragma once
 #include <wx/wx.h>
 #include <wx/calctrl.h>
+#include <wx/timectrl.h>
 #include <string>
 #include "ufw/fileIO.h"
 
@@ -18,13 +19,15 @@ private:
     wxCalendarCtrl* date = nullptr;
     wxStaticText* __date = nullptr;
 
-    wxTextCtrl* time = nullptr;
+    wxTimePickerCtrl* time = nullptr;
+    wxStaticText* __time = nullptr;
+
     wxTextCtrl* param1 = nullptr;    // param1 for anime -> Season, manga -> Chapter, movies -> Part
     wxTextCtrl* param2 = nullptr;    // param2 for anime -> episode, manga -> page stopped on
     wxTextCtrl* details = nullptr;
 
     void onDateSel(wxCalendarEvent& evt);
-
+    void onTimeSel(wxDateEvent& evt);
 
     // format the date from yyyy-mm-dd to dd - "Month Name" - yyyy
     wxString formatDate(wxString string1);
@@ -36,4 +39,5 @@ private:
 
 enum {
     ID_CAL,
+    ID_TIME,
 };
