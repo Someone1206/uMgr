@@ -1,4 +1,9 @@
 #include "AddE.h"
+#include <wx/datetime.h>
+
+wxBEGIN_EVENT_TABLE(AddE, wxFrame)
+	EVT_CALENDAR_SEL_CHANGED(ID_CAL, onDateSel)
+wxEND_EVENT_TABLE()
 
 AddE::AddE(wxWindow* frame, const wxString& title, ReadOptions readOption, const wxString& entryName, const wxPoint& pos, const wxSize& size)
 	:
@@ -7,16 +12,82 @@ AddE::AddE(wxWindow* frame, const wxString& title, ReadOptions readOption, const
 	__frame = frame;
 	__frame->Enable(false);
 
-	wxStaticText* name = new wxStaticText(this, 6, ("Name:    " + entryName), wxPoint(20, 5), wxDefaultSize, wxALIGN_LEFT);
-	wxStaticText* det = new wxStaticText(this, 6, "Details:", wxPoint(20, 60), wxDefaultSize, wxALIGN_LEFT);
+	wxStaticText* name = new wxStaticText(this, 6, ("Name:    " + entryName), wxPoint(20, 1), wxDefaultSize, wxALIGN_LEFT);
+
+	date = new wxCalendarCtrl(this, ID_CAL, wxDefaultDateTime, wxPoint(20, 30), wxDefaultSize,
+		wxCAL_SUNDAY_FIRST | wxCAL_SHOW_HOLIDAYS | wxCAL_SHOW_SURROUNDING_WEEKS | wxCAL_SEQUENTIAL_MONTH_SELECTION | wxCAL_SHOW_WEEK_NUMBERS);
+	date->SetDate(wxDateTime::Now());
+	__date = new wxStaticText(this, 6, ("Date Selected:    " + formatDate(date->GetDate().FormatISODate())), wxPoint(20, 15), wxDefaultSize, wxALIGN_LEFT);
+
+	wxStaticText* det = new wxStaticText(this, 6, "Details:", wxPoint(20, 250), wxDefaultSize, wxALIGN_LEFT);
 	if (readOption == Anime) {
-		wxStaticText* __date = new wxStaticText(this, 6, "Date:", wxPoint(20, 30), wxDefaultSize, wxALIGN_LEFT);
 	}
 
-	details = new wxTextCtrl(this, 6969, "Details", wxPoint(20, 50 * 2), wxSize(100, 100));
+	// details = new wxTextCtrl(this, 6969, "Details", wxPoint(20, 50 * 2), wxSize(100, 100));
 	
 	name = nullptr;
 	det = nullptr;
+}
+
+void AddE::onDateSel(wxCalendarEvent& evt)
+{
+	__date->SetLabel(("Date Selected:    " + formatDate(evt.GetDate().FormatISODate())));
+}
+
+wxString AddE::formatDate(wxString string1)
+{
+	std::string toFormat = std::string(string1.mb_str());
+	int monthNo_1 = toFormat.at(4) - '0', monthNo_2 = toFormat.at(5) - '0';
+
+	std::string month = "Jan", day = toFormat.substr(toFormat.length() - 2), year = toFormat.substr(0, 4);
+	switch (monthNo_1)
+	{
+	case 1:
+		month = "Jan";
+		break;
+	case 2:
+		month = "Feb";
+		break;
+	case 3:
+		month = "Mar";
+		break;
+	case 4:
+		month = "Apr";
+		break;
+	case 5:
+		month = "May";
+		break;
+	case 6:
+		month = "Jun";
+		break;
+	case 7:
+		month = "Jul";
+		break;
+	case 8:
+		month = "Aug";
+		break;
+	case 9:
+		month = "Sep";
+		break;
+	default:
+		break;
+	}
+
+	switch (monthNo_2)
+	{
+	case 0:
+		month = "Oct";
+		break;
+	case 1:
+		month = "Nov";
+		break;
+	case 2:
+		month = "Dec";
+		break;
+	default:
+		break;
+	}
+	return wxString((day + "-" + month + "-" + year));
 }
 
 AddE::~AddE()
