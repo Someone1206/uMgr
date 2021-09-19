@@ -1,8 +1,10 @@
 #include "AddE.h"
 #include <wx/datetime.h>
+#include <wx/timectrl.h>
 
 wxBEGIN_EVENT_TABLE(AddE, wxFrame)
 	EVT_CALENDAR_SEL_CHANGED(ID_CAL, onDateSel)
+	EVT_TIME_CHANGED(ID_TIME, onTimeSel)
 wxEND_EVENT_TABLE()
 
 AddE::AddE(wxWindow* frame, const wxString& title, ReadOptions readOption, const wxString& entryName, const wxPoint& pos, const wxSize& size)
@@ -19,19 +21,26 @@ AddE::AddE(wxWindow* frame, const wxString& title, ReadOptions readOption, const
 	date->SetDate(wxDateTime::Now());
 	__date = new wxStaticText(this, 6, ("Date Selected:    " + formatDate(date->GetDate().FormatISODate())), wxPoint(20, 15), wxDefaultSize, wxALIGN_LEFT);
 
+	time = new wxTimePickerCtrl(this, ID_TIME, wxDefaultDateTime, wxPoint(300, 30), wxSize(wxDefaultSize.x + 100, wxDefaultSize.y + 40));
+	time->SetValue(wxDateTime::Now());
+	__time = new wxStaticText(this, 6989, ("Time Selected:    " + time->GetValue().FormatISOTime()), wxPoint(300, 15), wxDefaultSize, wxALIGN_LEFT);
+	// %x to replace
+
 	wxStaticText* det = new wxStaticText(this, 6, "Details:", wxPoint(20, 250), wxDefaultSize, wxALIGN_LEFT);
 	if (readOption == Anime) {
 	}
 
 	// details = new wxTextCtrl(this, 6969, "Details", wxPoint(20, 50 * 2), wxSize(100, 100));
-	
-	name = nullptr;
-	det = nullptr;
 }
 
 void AddE::onDateSel(wxCalendarEvent& evt)
 {
 	__date->SetLabel(("Date Selected:    " + formatDate(evt.GetDate().FormatISODate())));
+}
+
+void AddE::onTimeSel(wxDateEvent& evt)
+{
+	__time->SetLabel(("Time Selected:    " + time->GetValue().FormatISOTime()));
 }
 
 wxString AddE::formatDate(wxString string1)
