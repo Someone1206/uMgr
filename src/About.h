@@ -8,17 +8,17 @@ public:
     About(wxWindow* frame, const wxPoint& pos, const wxSize& size, wxColor* theme);
 
 private:
-    wxPanel* win = nullptr;
-    wxStaticText* abt = nullptr;
+    //wxPanel* win = nullptr;
+    //wxStaticText* abt = nullptr;
     wxButton* okBtn = nullptr;
 
-    wxGridSizer* psizer = nullptr;
+    //wxGridSizer* psizer = nullptr;
     /*
     wxBoxSizer* psizer = nullptr;
     wxBoxSizer* msizer = nullptr;
     */
 
-    void okai(wxCommandEvent& evt); // not to be confused with okai in shinchan
+    void okei(wxCommandEvent& evt); // not to be confused with okei in shinchan
 
     wxDECLARE_EVENT_TABLE();
 
