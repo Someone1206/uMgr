@@ -21,6 +21,7 @@ private:
 
     wxTimePickerCtrl* time = nullptr;
     wxStaticText* __time = nullptr;
+    wxButton* time_now = nullptr;
 
     wxTextCtrl* param1 = nullptr;    // param1 for anime -> Season, manga -> Chapter, movies -> Part
     wxTextCtrl* param2 = nullptr;    // param2 for anime -> episode, manga -> page stopped on
@@ -28,6 +29,7 @@ private:
 
     void onDateSel(wxCalendarEvent& evt);
     void onTimeSel(wxDateEvent& evt);
+    void onTimeNow(wxCommandEvent& evt);
 
     // format the date from yyyy-mm-dd to dd - "Month Name" - yyyy
     wxString formatDate(wxString string1);
@@ -40,4 +42,5 @@ private:
 enum {
     ID_CAL,
     ID_TIME,
+    ID_TIME_NOW
 };

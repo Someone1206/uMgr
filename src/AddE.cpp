@@ -5,6 +5,7 @@
 wxBEGIN_EVENT_TABLE(AddE, wxFrame)
 	EVT_CALENDAR_SEL_CHANGED(ID_CAL, onDateSel)
 	EVT_TIME_CHANGED(ID_TIME, onTimeSel)
+	EVT_BUTTON(ID_TIME_NOW, onTimeNow)
 wxEND_EVENT_TABLE()
 
 AddE::AddE(wxWindow* frame, const wxString& title, ReadOptions readOption, const wxString& entryName, const wxPoint& pos, const wxSize& size)
@@ -21,10 +22,11 @@ AddE::AddE(wxWindow* frame, const wxString& title, ReadOptions readOption, const
 	date->SetDate(wxDateTime::Now());
 	__date = new wxStaticText(this, 6, ("Date Selected:    " + formatDate(date->GetDate().FormatISODate())), wxPoint(20, 15), wxDefaultSize, wxALIGN_LEFT);
 
-	time = new wxTimePickerCtrl(this, ID_TIME, wxDefaultDateTime, wxPoint(300, 30), wxSize(wxDefaultSize.x + 100, wxDefaultSize.y + 40));
+	time = new wxTimePickerCtrl(this, ID_TIME, wxDefaultDateTime, wxPoint(300, 30), wxSize(wxDefaultSize.x + 80, wxDefaultSize.y + 40));
 	time->SetValue(wxDateTime::Now());
 	__time = new wxStaticText(this, 6989, ("Time Selected:    " + time->GetValue().FormatISOTime()), wxPoint(300, 15), wxDefaultSize, wxALIGN_LEFT);
 	// %x to replace
+	time_now = new wxButton(this, ID_TIME_NOW, "&Get Current Time", wxPoint(300 + 90, 35));
 
 	wxStaticText* det = new wxStaticText(this, 6, "Details:", wxPoint(20, 250), wxDefaultSize, wxALIGN_LEFT);
 	if (readOption == Anime) {
@@ -40,6 +42,12 @@ void AddE::onDateSel(wxCalendarEvent& evt)
 
 void AddE::onTimeSel(wxDateEvent& evt)
 {
+	__time->SetLabel(("Time Selected:    " + time->GetValue().FormatISOTime()));
+}
+
+void AddE::onTimeNow(wxCommandEvent& evt)
+{
+	time->SetValue(wxDateTime::Now());
 	__time->SetLabel(("Time Selected:    " + time->GetValue().FormatISOTime()));
 }
 
