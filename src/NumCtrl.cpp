@@ -7,7 +7,8 @@ END_EVENT_TABLE()
 
 NumCtrl::NumCtrl(wxWindow* parent, wxWindowID id, const wxString& s, long style)
 {
-    bool idk = Create(parent, id, s);
+    bool idk = Create(parent, id, s, wxDefaultPosition, wxDefaultSize, style);
+    SetMaxLength(9);
 }
 
 void NumCtrl::onType(wxKeyEvent& evt)
@@ -40,8 +41,12 @@ void NumCtrl::onType(wxKeyEvent& evt)
     }
 }
 
-int NumCtrl::GetNum(wxCommandEvent& evt)
+int NumCtrl::GetInt(wxCommandEvent& evt)
 {
-    
-    return 0;
+    std::string val = std::string(GetValue().mb_str());
+    int num = 0;
+    for (int i = 0; i < val.length(); i++)
+        num = num * 10 + (val.at(i) - '0');
+
+    return num;
 }
