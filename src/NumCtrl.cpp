@@ -51,17 +51,5 @@ void NumCtrl::onType(wxKeyEvent& evt)
     case WXK_PAGEUP:
     case WXK_PAGEDOWN:
         evt.Skip();
-    default:
-        break;
     }
-}
-
-int NumCtrl::GetInt(wxCommandEvent& evt)
-{
-    std::string val = std::string(GetValue().mb_str());
-    int num = 0;
-    for (int i = 0; i < val.length(); i++)
-        num = num * 10 + (val.at(i) - '0');
-
-    return num;
 }
