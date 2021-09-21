@@ -35,6 +35,21 @@ void NumCtrl::onType(wxKeyEvent& evt)
     case WXK_NUMPAD7:
     case WXK_NUMPAD8:
     case WXK_NUMPAD9:
+
+    case WXK_BACK:
+    case WXK_RETURN:
+    case WXK_DELETE:
+    case WXK_CLEAR:
+    case WXK_SHIFT:
+    case WXK_END:
+    case WXK_HOME:
+    case WXK_LEFT:
+    case WXK_UP:
+    case WXK_RIGHT:
+    case WXK_DOWN:
+    case WXK_SELECT:
+    case WXK_PAGEUP:
+    case WXK_PAGEDOWN:
         evt.Skip();
     default:
         break;
