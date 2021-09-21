@@ -30,15 +30,16 @@ private:
 
     wxDECLARE_EVENT_TABLE();
 
+    enum {
+        ID_CR_F,
+        ID_OKAI,
+        ID_APPLY,
+        ID_CANCEL,
+        ID_THEME
+    };
+
 public:
     ~SetMgr();
 
 };
 
-enum {
-    ID_CR_F,
-    ID_OKAI,
-    ID_APPLY,
-    ID_CANCEL,
-    ID_THEME
-};

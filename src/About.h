@@ -22,11 +22,10 @@ private:
 
     wxDECLARE_EVENT_TABLE();
 
+    enum {
+        ID_PANEL,
+        ID_OK_BTN
+    };
 public:
     ~About();
-};
-
-enum {
-    ID_PANEL,
-    ID_OK_BTN
 };
