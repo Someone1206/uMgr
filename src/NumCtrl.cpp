@@ -34,9 +34,9 @@ void NumCtrl::onType(wxKeyEvent& evt)
     case WXK_NUMPAD7:
     case WXK_NUMPAD8:
     case WXK_NUMPAD9:
-        break;
-    default:
         evt.Skip();
+    default:
+        break;
     }
 }
 
