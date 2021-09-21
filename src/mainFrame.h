@@ -55,16 +55,16 @@ private:
 
     wxDECLARE_EVENT_TABLE();
 
+    enum {
+        ID_BTN1,
+        ID_BTN2,
+        ID_SETT,
+        ID_PANE,
+        ID_LIST,
+        ID_E_LIST,
+        ID_ADDLOG
+    };
+
 public:
     ~mainFrame();
-};
-
-enum {
-    ID_BTN1,
-    ID_BTN2,
-    ID_SETT,
-    ID_PANE,
-    ID_LIST,
-    ID_E_LIST,
-    ID_ADDLOG
 };
