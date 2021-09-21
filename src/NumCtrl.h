@@ -1,6 +1,5 @@
 #pragma once
 
-// includes
 #include <wx/wx.h>
 #include <wx/textctrl.h>
 
@@ -14,6 +13,4 @@ private:
     DECLARE_EVENT_TABLE();
 
     void onType(wxKeyEvent& evt);
-
-    int GetInt(wxCommandEvent& evt);
 };
