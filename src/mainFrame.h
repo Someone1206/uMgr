@@ -1,8 +1,8 @@
 #pragma once
-#include <wx/wx.h>
 #include "SetMgr.h"
 #include "About.h"
 #include "AddLog.h"
+#include "AddGen.h"
 
 class mainFrame :
     public wxFrame
@@ -53,6 +53,9 @@ private:
     void choice(wxCommandEvent& evt);
     void entryChoice(wxCommandEvent& evt);
     void _addLog_(wxCommandEvent& evt);
+
+    void genAdd(wxCommandEvent& evt);
+    void entryAdd(wxCommandEvent& evt);
 
     wxDECLARE_EVENT_TABLE();
 
