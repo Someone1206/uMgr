@@ -117,6 +117,7 @@ void readFile(ifstream& file, ReadOptions options, wxTextCtrl* logDisp, int hist
         int smth = wxMessageBox("Can't Open File!", "", wxOK | wxICON_ERROR);
 
     if (file.peek() == ifstream::traits_type::eof()) {
+        logDisp->Clear();
         (*logDisp) << "No Logs Made";
         return;
     }
@@ -210,11 +211,14 @@ void readFile(ifstream& file, ReadOptions options, wxTextCtrl* logDisp, int hist
     }
     if (!hasContent)
         (*logDisp) << "No Logs Made";
+    if (clearAtS)
+        logDisp->SetInsertionPoint(0);
     logDisp = nullptr;
 }
 
-void readTrackerFile(ifstream& file, TrackerFileOptions tfo, wxTextCtrl* logDisp, int history, wxString* list, str dist, bool fullName, str* listFP) {
-    
+void readTrackerFile(ifstream& file, TrackerFileOptions tfo, wxTextCtrl* logDisp, int history,
+    wxString* list, str dist, bool fullName, str* listFP) {
+
     if (logDisp != emptyText)
         logDisp->Clear();
 
@@ -279,6 +283,8 @@ void readTrackerFile(ifstream& file, TrackerFileOptions tfo, wxTextCtrl* logDisp
                 wxOK | wxICON_ERROR);
         }
     }
+    if (logDisp != emptyText)
+        logDisp->SetInsertionPoint(0);
 }
 
 bool readTrackerFile(ifstream& file, bool* choices) {
@@ -351,7 +357,7 @@ void writeToll(str& data, str& genre) {
     ofstream fileW(tempFilePaf);
 
     fileW << (char)1 << endl;
-    
+
     // write to temp file
     {
         str temp = "";
@@ -383,7 +389,9 @@ void writeToll(str& data, str& genre) {
 
 
 // a really inefficient way of writing to the starting of file
-void writeFile(str paf, str& data, str genre, int option, str name) {
+void writeFile(str paf, str& data, int option, str name) {
+    str genre = paf.substr(folderN.length() + 1);
+    genre = genre.substr(0, genre.find(fsep));
 
     if ((option & Create) == Create)
     {

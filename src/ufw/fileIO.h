@@ -105,6 +105,6 @@ bool readTrackerFile(ifstream& file, bool* choices);
 /// <param name="genre"> = The genre of the entry, needed for log summary</param>
 /// <param name="option"> = Create only or add a log</param>
 /// <param name="name"> = The ctual name of the entry</param>
-void writeFile(str paf, str& data, str genre = "Anime", int option = Create, str name = "");
+void writeFile(str paf, str& data, int option = Create, str name = "");
 // write to setting file
 void writeFile(bool* choices, str paf = (folderN + fsep + "Settings.baka"));
