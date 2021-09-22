@@ -11,7 +11,7 @@ wxBEGIN_EVENT_TABLE(mainFrame, wxFrame)
     EVT_CHOICE(ID_LIST, mainFrame::choice)
     EVT_CHOICE(ID_E_LIST, mainFrame::entryChoice)
 
-    EVT_BUTTON(ID_ADDLOG, mainFrame::addE)
+    EVT_BUTTON(ID_ADDLOG, mainFrame::_addLog_)
 wxEND_EVENT_TABLE()
 
 mainFrame::mainFrame(const wxString& title, const wxPoint& pos, const wxSize& size)
@@ -29,7 +29,7 @@ mainFrame::mainFrame(const wxString& title, const wxPoint& pos, const wxSize& si
             theme = new wxColor(30, 30, 30);
     }
 
-    
+
     int len = entriesNGenres() + 1;
     genres = new wxString[len];
     genres[0] = "Log Summary";
@@ -49,6 +49,10 @@ mainFrame::mainFrame(const wxString& title, const wxPoint& pos, const wxSize& si
     }
 
     // menu stuffs... ignore this sheesh
+    __add__ = new wxMenu();
+    __add__->Append(ID_ADDENTRY, "&Add Entry", "Add a New Entry");
+    __add__->Append(ID_ADDGENRE, "&Add Genre", "Add a New Genre");
+
     sett = new wxMenu();
     sett->Append(ID_SETT, "&Settings", "Settings Manager for this crap");
 
@@ -59,6 +63,7 @@ mainFrame::mainFrame(const wxString& title, const wxPoint& pos, const wxSize& si
     quit->Append(wxID_EXIT, "&Quit", "Quit this Crap");
 
     mbar = new wxMenuBar();
+    mbar->Append(__add__, "&Add");
     mbar->Append(sett, "&Settings");
     mbar->Append(abt, "&About");
     mbar->Append(quit, "&Quit");
@@ -126,7 +131,7 @@ void mainFrame::choice(wxCommandEvent& evt)
             entries = nullptr;
 
             int len = entriesNGenres((folderN + fsep + opt), true);
-            
+
             if (addLog == nullptr)
                 addLog = new wxButton(this, ID_ADDLOG, "&Add Log", wxPoint(10, 10 + 50 + 50), wxDefaultSize);
             if (len != 0) // if no entries present
@@ -143,6 +148,8 @@ void mainFrame::choice(wxCommandEvent& evt)
                 entries = new wxChoice(this, ID_E_LIST, wxPoint(10, 10 + 50), wxDefaultSize, 1, noEntries);
                 entries->SetSelection(0);
                 addLog->Enable(false);
+                logs->Clear();
+                (*logs) << "No Entries made";
             }
 
             if (opt == "Anime")
@@ -156,7 +163,6 @@ void mainFrame::choice(wxCommandEvent& evt)
 
             if (len != 0)
             {
-                logs->Clear();
                 ifstream file(entryFP[0]);
                 readFile(file, fileRop, logs, 0, 0, true);
             }
@@ -192,12 +198,16 @@ void mainFrame::entryChoice(wxCommandEvent& evt)
 }
 
 // add the entry button
-void mainFrame::addE(wxCommandEvent& evt)
+void mainFrame::_addLog_(wxCommandEvent& evt)
 {
     wxPoint pos = this->GetPosition();
 
-    addEntry = new AddE(this, ("Add New Log for " + entryList[entries->GetSelection()] + " in genre " + genres[list->GetSelection()]), fileRop, entryList[entries->GetSelection()], wxPoint(pos.x + 30, pos.y + 30), wxSize(480, 320));
-    addEntry->Show();
+    __addLog = new AddLog(this,
+        ("Add New Log for " + entryList[entries->GetSelection()] + " in genre " + genres[list->GetSelection()]),
+        fileRop, entryList[entries->GetSelection()],
+        wxPoint(pos.x + 30, pos.y + 30), wxSize(480, 320),
+        entryFP[entries->GetSelection()]);
+    __addLog->Show();
 }
 
 mainFrame::~mainFrame()
