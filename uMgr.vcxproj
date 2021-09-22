@@ -164,7 +164,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\NumCtrl.cpp" />
-    <ClCompile Include="src\AddE.cpp" />
+    <ClCompile Include="src\AddLog.cpp" />
     <ClCompile Include="src\SetMgr.cpp" />
     <ClCompile Include="src\About.cpp" />
     <ClCompile Include="src\mainFrame.cpp" />
@@ -174,7 +174,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\NumCtrl.h" />
-    <ClInclude Include="src\AddE.h" />
+    <ClInclude Include="src\AddLog.h" />
     <ClInclude Include="src\SetMgr.h" />
     <ClInclude Include="src\About.h" />
     <ClInclude Include="src\mainFrame.h" />

@@ -33,7 +33,7 @@
     <ClCompile Include="src\ufw\fileIO.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\AddE.cpp">
+    <ClCompile Include="src\AddLog.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\NumCtrl.cpp">
@@ -56,7 +56,7 @@
     <ClInclude Include="src\ufw\fileIO.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\AddE.h">
+    <ClInclude Include="src\AddLog.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\NumCtrl.h">
