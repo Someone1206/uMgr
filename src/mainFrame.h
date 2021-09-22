@@ -2,7 +2,7 @@
 #include <wx/wx.h>
 #include "SetMgr.h"
 #include "About.h"
-#include "AddE.h"
+#include "AddLog.h"
 
 class mainFrame :
     public wxFrame
@@ -27,6 +27,7 @@ private:
 
     // menu stuffs
     wxMenuBar* mbar = nullptr;
+	wxMenu* __add__ = nullptr;
     wxMenu* sett = nullptr;
     wxMenu* abt = nullptr;
     wxMenu* quit = nullptr;
@@ -40,7 +41,7 @@ private:
     // the other needed classes and windows
     SetMgr* setMgr = nullptr;
     About* about = nullptr;
-    AddE* addEntry = nullptr;
+    AddLog* __addLog = nullptr;
 
     // functions needed
     void lastLogsS(wxCommandEvent& evt);
@@ -51,7 +52,7 @@ private:
 
     void choice(wxCommandEvent& evt);
     void entryChoice(wxCommandEvent& evt);
-    void addE(wxCommandEvent& evt);
+    void _addLog_(wxCommandEvent& evt);
 
     wxDECLARE_EVENT_TABLE();
 
@@ -62,7 +63,9 @@ private:
         ID_PANE,
         ID_LIST,
         ID_E_LIST,
-        ID_ADDLOG
+        ID_ADDLOG,
+        ID_ADDGENRE,
+        ID_ADDENTRY
     };
 
 public:
