@@ -7,6 +7,8 @@ wxBEGIN_EVENT_TABLE(mainFrame, wxFrame)
     EVT_MENU(ID_SETT, mainFrame::onSet)
     EVT_MENU(wxID_ABOUT, mainFrame::onAbout)
     EVT_MENU(wxID_EXIT, mainFrame::onExit)
+    EVT_MENU(ID_ADDGENRE, mainFrame::genAdd)
+    EVT_MENU(ID_ADDENTRY, mainFrame::entryAdd)
 
     EVT_CHOICE(ID_LIST, mainFrame::choice)
     EVT_CHOICE(ID_E_LIST, mainFrame::entryChoice)
@@ -50,7 +52,6 @@ mainFrame::mainFrame(const wxString& title, const wxPoint& pos, const wxSize& si
 
     // menu stuffs... ignore this sheesh
     __add__ = new wxMenu();
-    __add__->Append(ID_ADDENTRY, "&Add Entry", "Add a New Entry");
     __add__->Append(ID_ADDGENRE, "&Add Genre", "Add a New Genre");
 
     sett = new wxMenu();
@@ -92,8 +93,7 @@ void mainFrame::allLogsS(wxCommandEvent& evt) {
 
 void mainFrame::onAbout(wxCommandEvent& evt)
 {
-    wxPoint pos = this->GetPosition();
-    about = new About(this, wxPoint(pos.x + 30, pos.y + 30), wxSize(480, 320), theme);
+    about = new About(this, wxPoint(this->GetPosition().x + 30, this->GetPosition().y + 30), wxSize(480, 320), theme);
     about->Show();
 }
 
@@ -104,8 +104,7 @@ void mainFrame::onExit(wxCommandEvent& evt)
 
 void mainFrame::onSet(wxCommandEvent& evt)
 {
-    wxPoint pos = this->GetPosition();
-    setMgr = new SetMgr(this, wxPoint(pos.x + 30, pos.y + 30), wxSize(640, 480), theme);
+    setMgr = new SetMgr(this, wxPoint(this->GetPosition().x + 30, this->GetPosition().y + 30), wxSize(640, 480), theme);
     setMgr->Show();
 }
 
@@ -116,6 +115,7 @@ void mainFrame::choice(wxCommandEvent& evt)
 
     if (opt != _prevOpt) { // if current selection != previous selection
         if (opt != str(genres[0].mb_str())) { // if != to log summary
+            __add__->Append(ID_ADDENTRY, "&Add Entry", "Add a New Entry");
             if (allLogs != nullptr) {
                 allLogs->Destroy();
                 lastLogs->Destroy();
@@ -168,6 +168,7 @@ void mainFrame::choice(wxCommandEvent& evt)
             }
         }
         else {
+            __add__->Delete(ID_ADDENTRY);
             entries->Destroy();
             addLog->Destroy();
             entries = nullptr;
@@ -208,6 +209,19 @@ void mainFrame::_addLog_(wxCommandEvent& evt)
         wxPoint(pos.x + 30, pos.y + 30), wxSize(480, 320),
         entryFP[entries->GetSelection()]);
     __addLog->Show();
+}
+
+void mainFrame::genAdd(wxCommandEvent& evt)
+{
+    AddGen* addGen = new AddGen(this, "Add a New Genre",
+        wxPoint(this->GetPosition().x + 30, this->GetPosition().y + 30),
+        wxSize(480, 420) 
+    );
+    addGen->Show();
+}
+
+void mainFrame::entryAdd(wxCommandEvent& evt)
+{
 }
 
 mainFrame::~mainFrame()
