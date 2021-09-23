@@ -3,4 +3,10 @@
 #### Useless Manager
 ---
 
-This is one of the most useless and stupid log manager. You'd better search for a log manager on the internet and you will obviously get one which is 1000000times better than this. I mainly made it for my use and to waste time. Feel free to contribute and make it more and mo'e efficient. It's built using wxWidgets and there are a lot of mem leaks in the code as its still in development. The file I/O system used is here: [uMgrCli](https://github.com/Someone1206/Non-Existence/tree/main/uMgr)
+You are looking at one of the most Useless Manager.  
+You can use it to manage you logs with GUI (thank god no CLI). You have special formats to save your logs for the stuffs that matter
+like ***Anime, Ero Anime (Hentai, btw this also falls under Anime itself) and Manga.***
+
+---
+
+There are a lot of Memory Leaks as it's still in development.
