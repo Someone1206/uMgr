@@ -1,4 +1,6 @@
 #include "mainFrame.h"
+#include "AddGen.h"
+#include "AddEntry.h"
 
 wxBEGIN_EVENT_TABLE(mainFrame, wxFrame)
     EVT_BUTTON(ID_BTN1, mainFrame::lastLogsS)
@@ -214,14 +216,20 @@ void mainFrame::_addLog_(wxCommandEvent& evt)
 void mainFrame::genAdd(wxCommandEvent& evt)
 {
     AddGen* addGen = new AddGen(this, "Add a New Genre",
-        wxPoint(this->GetPosition().x + 30, this->GetPosition().y + 30),
-        wxSize(480, 420) 
+        wxPoint(this->GetPosition().x + this->GetClientSize().x / 4, this->GetPosition().y + this->GetClientSize().y / 2),
+        wxSize(480, 420)
     );
     addGen->Show();
 }
 
 void mainFrame::entryAdd(wxCommandEvent& evt)
 {
+    AddEntry* addEntry = new AddEntry(this, 
+        ("Add a new Entry for genre " + genres[list->GetSelection()]),
+        wxPoint(this->GetPosition().x + this->GetClientSize().x / 4, this->GetPosition().y + this->GetClientSize().y / 2),
+        genres[list->GetSelection()]
+    );
+    addEntry->Show();
 }
 
 mainFrame::~mainFrame()

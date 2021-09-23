@@ -2,7 +2,6 @@
 #include "SetMgr.h"
 #include "About.h"
 #include "AddLog.h"
-#include "AddGen.h"
 
 class mainFrame :
     public wxFrame
