@@ -3,14 +3,16 @@
 // check if the string is empty or not
 bool isspace(str& string1) {
     const char* c = string1.c_str();
-
-    for (int i = 0; i < string1.length(); ++i)
+    int count = 0;
+    for (int i = 0; i < string1.length(); ++i) {
         if (isspace(*c++)) {
-            c = nullptr;
-            return false;
+            count++;
         }
+    }
     c = nullptr;
-    return true;
+    if (count == string1.length())
+        return true;
+    return false;
 }
 
 /* ******************************************************************************

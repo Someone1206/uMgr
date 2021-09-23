@@ -58,3 +58,41 @@ void init(bool* choices) {
     }
     choices = nullptr;
 }
+
+bool createGen(const wxString& genName)
+{
+    std::string gen_name = std::string(genName.mb_str());
+
+    if (isspace(gen_name) || gen_name.length() == 0) {
+        wxMessageBox("Empty Genre Name", "You think I'm stupid");
+        return false;
+    }
+
+    if (fs::exists((folderN + fsep + gen_name))) {
+        wxMessageBox("Genre Already Exists", "-_-");
+        return false;
+    }
+
+    fs::create_directory(folderN + fsep + gen_name);
+    return true;
+}
+
+bool createEntry(const wxString& entryName, const wxString& genName)
+{
+    std::string entry_name = std::string(entryName.mb_str());
+    std::string paf = folderN + fsep + std::string(genName.mb_str()) + fsep + entry_name + ".baka";
+
+    if (isspace(entry_name) || entry_name.length() == 0) {
+        wxMessageBox("Empty Entry Name", "You think I'm stupid");
+        return false;
+    }
+
+    if (fs::exists(paf)) {
+        wxMessageBox("Entry Already Exists", "-_-");
+        return false;
+    }
+
+    ofstream file(paf);
+    file.close();
+    return true;
+}
