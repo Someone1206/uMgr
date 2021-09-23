@@ -163,6 +163,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\AddEntry.cpp" />
     <ClCompile Include="src\AddGen.cpp" />
     <ClCompile Include="src\NumCtrl.cpp" />
     <ClCompile Include="src\AddLog.cpp" />
@@ -174,6 +175,7 @@
     <ClCompile Include="src\uMgr.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\AddEntry.h" />
     <ClInclude Include="src\AddGen.h" />
     <ClInclude Include="src\NumCtrl.h" />
     <ClInclude Include="src\AddLog.h" />
