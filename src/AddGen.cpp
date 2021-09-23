@@ -1,5 +1,6 @@
 #include "AddGen.h"
-#include "ufw/fileIO.h"
+#include "AddEntry.h"
+#include "ufw/init.h"
 
 wxBEGIN_EVENT_TABLE(AddGen, wxFrame)
     EVT_BUTTON(ID_ADD, AddGen::addGen)
@@ -51,16 +52,19 @@ AddGen::AddGen(wxWindow* frame, const wxString& title, const wxPoint& pos, const
 
 void AddGen::addGen(wxCommandEvent& evt) {
     
-    if (gen_name->IsEmpty()) {
-        wxMessageBox("Bish you haven't provided a genre name");
-        return;
-    }
-    fs::create_directory((folderN + fsep + std::string(gen_name->GetValue().mb_str())));
-    Destroy();
+    if (createGen(gen_name->GetValue()))
+        Destroy();
+    return;
 }
 
 void AddGen::addGenN_entry(wxCommandEvent& evt) {
-    wxMessageBox("Shit! Still in beta", "Ditch me!");
+    if (createGen(gen_name->GetValue())) {
+        AddEntry* fook = new AddEntry(this,
+            ("Add Entry for " + gen_name->GetValue()), 
+            wxPoint(this->GetPosition().x + 20, this->GetPosition().y + 20),
+            gen_name->GetValue());
+        fook->Show();
+    }
 }
 
 void AddGen::cancel(wxCommandEvent& evt) {
