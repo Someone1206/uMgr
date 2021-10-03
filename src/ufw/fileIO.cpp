@@ -1,7 +1,8 @@
 #include "fileIO.h"
+#include <thread>
 
-// check if the string is empty or not
-bool isspace(str& string1) {
+bool isspace(std::string& string1)
+{
     const char* c = string1.c_str();
     int count = 0;
     for (int i = 0; i < string1.length(); ++i) {
@@ -89,22 +90,12 @@ bool isspace(str& string1) {
  * ...
  * ... stores and may show all logs
  *
- * <!-- GenIndexer.baka (G_IndexerAndData)-->
- *
- * <!!-- Names to display for the Genre  (I'll implement this later)  --!>
- * <-- some OS may not support Unicode in its filesystem (which OS is so damn outdated?)
- * or may show errors or stupid behaviours for some characters (I'm not trying to say that
- * English is great but I've seen some linux distros do that, Windows doesn't show any problems
- * its good -->
- *
- * <!-- EntryIndexer.baka -->
- *
- * <!!-- Names to display for the Entry  (this too will be implemented later or not at all)  --!>
  *
  * ******************************************************************************
  */
 
-int entriesNGenres(str genre, bool isEntry)
+
+int entriesNGenres(std::string genre, bool isEntry)
 {
     int i = 0;
     for (auto& gen : fs::directory_iterator(genre))
@@ -113,18 +104,30 @@ int entriesNGenres(str genre, bool isEntry)
     return i;
 }
 
-void readFile(ifstream& file, ReadOptions options, wxTextCtrl* logDisp, int history, bool isLLog, bool clearAtS) {
+void mt_Field(std::string& data, wxTextCtrl* logDisp)
+{
+    if (data == "")
+    {
+        logDisp->SetDefaultStyle(wxTextAttr(wxNullColour, wxColor(200, 200, 255)));
+        (*logDisp) << data << '\n';
+        logDisp->SetDefaultStyle(wxTextAttr(wxNullColour));
+        return;
+    }
+    (*logDisp) << data << '\n';
+}
+
+void readFile(std::ifstream& file, ReadOptions options, wxTextCtrl* logDisp, int history, bool isLLog, bool clearAtS) {
 
     if (!file.is_open())
         int smth = wxMessageBox("Can't Open File!", "", wxOK | wxICON_ERROR);
 
-    if (file.peek() == ifstream::traits_type::eof()) {
+    if (file.peek() == std::ifstream::traits_type::eof()) {
         logDisp->Clear();
         (*logDisp) << "No Logs Made";
         return;
     }
 
-    str line = "";
+    std::string line = "";
     int counter = 0;
     bool hasContent = false;
 
@@ -172,7 +175,7 @@ void readFile(ifstream& file, ReadOptions options, wxTextCtrl* logDisp, int hist
             case Others:
                 if (counter == 2)
                     (*logDisp) << "Details and Remarks:\n";
-                (*logDisp) << line << "\n";
+                mt_Field(line, logDisp);
                 break;
             case Anime:
                 if (counter == 2)
@@ -182,7 +185,7 @@ void readFile(ifstream& file, ReadOptions options, wxTextCtrl* logDisp, int hist
                 else {
                     if (counter == 4)
                         (*logDisp) << "Details and Remarks:\n";
-                    (*logDisp) << line << "\n";
+                    mt_Field(line, logDisp);
                 }
                 break;
 
@@ -194,17 +197,17 @@ void readFile(ifstream& file, ReadOptions options, wxTextCtrl* logDisp, int hist
                 else {
                     if (counter == 4)
                         (*logDisp) << "Details and Remarks:\n";
-                    (*logDisp) << line << "\n";
+                    mt_Field(line, logDisp);
                 }
                 break;
 
             case Movies:
-                if (counter == 2)
+                if (counter == 2 && line != "") // if not empty
                     (*logDisp) << "Part Last seen:    " << line << "\n";
                 else {
                     if (counter == 3)
                         (*logDisp) << "Details and Remarks:" << "\n";
-                    (*logDisp) << line << "\n";
+                    mt_Field(line, logDisp);
                 }
             }
             hasContent = true;
@@ -218,79 +221,79 @@ void readFile(ifstream& file, ReadOptions options, wxTextCtrl* logDisp, int hist
     logDisp = nullptr;
 }
 
-void readTrackerFile(ifstream& file, TrackerFileOptions tfo, wxTextCtrl* logDisp, int history,
-    wxString* list, str dist, bool fullName, str* listFP) {
+void readTrackerFile(std::ifstream& file, TrackerFileOptions tfo, wxTextCtrl* logDisp, int history,
+    wxString* list, std::string dist, bool fullName, std::string* listFP) {
 
     if (logDisp != emptyText)
         logDisp->Clear();
 
-    str line = "";
+    std::string line = "";
 
     switch (tfo) {
     case G_IndexerAndData:
     case E_IndexerAndData:
-        {
-            int i = 1;
-            for (auto& gen : fs::directory_iterator(dist))
-                if (gen.is_directory())
-                    list[i++] = gen.path().filename().string();
-        }
-        break;
+    {
+        int i = 1;
+        for (auto& gen : fs::directory_iterator(dist))
+            if (gen.is_directory())
+                list[i++] = gen.path().filename().string();
+    }
+    break;
     case Entries:
-        {
-            int i = 0;
-            for (auto& entry : fs::directory_iterator(dist))
-                if (!entry.is_directory()) {
-                    if (!fullName) {
-                        str temp = entry.path().filename().string();
-                        list[i] = temp.substr(0, temp.length() - 5);
-                    }
-                    listFP[i] = entry.path().string();
-                    i++;
+    {
+        int i = 0;
+        for (auto& entry : fs::directory_iterator(dist))
+            if (!entry.is_directory()) {
+                if (!fullName) {
+                    std::string temp = entry.path().filename().string();
+                    list[i] = temp.substr(0, temp.length() - 5);
                 }
-        }
-        break;
+                listFP[i] = entry.path().string();
+                i++;
+            }
+    }
+    break;
     case LogList:
-        {
-            if (!file.is_open()) {
-                int res = wxMessageBox("Can't open log file", "", wxOK | wxICON_ERROR);
-                return;
-            }
-            bool isGenN = 0;
-            while (getline(file, line)) {
-                if (line.find((char)1) != str::npos) {
-                    isGenN = 1;
-                    continue;
-                }
-                if (isGenN) {
-                    (*logDisp) << line << "\n--------------------\n";
-                    if (line.find("Anime") == 0)
-                        readFile(file, Anime, logDisp, 1, 1);
-                    else if (line.find("Manga") == 0)
-                        readFile(file, Manga, logDisp, 1, 1);
-                    else if (line.find("Movies") == 0)
-                        readFile(file, Movies, logDisp, 1, 1);
-                    else
-                        readFile(file, Others, logDisp, 1, 1);
-                    (*logDisp) << "====================\n";
-                }
-                isGenN *= 0;
-            }
+    {
+        if (!file.is_open()) {
+            int res = wxMessageBox("Can't open log file", "", wxOK | wxICON_ERROR);
+            return;
         }
-        break;
+        bool isGenN = 0;
+        while (getline(file, line)) {
+            if (line.find((char)1) != std::string::npos) {
+                isGenN = 1;
+                continue;
+            }
+            if (isGenN) {
+                (*logDisp) << line << "\n--------------------\n";
+                if (line.find("Anime") == 0)
+                    readFile(file, Anime, logDisp, 1, 1);
+                else if (line.find("Manga") == 0)
+                    readFile(file, Manga, logDisp, 1, 1);
+                else if (line.find("Movies") == 0)
+                    readFile(file, Movies, logDisp, 1, 1);
+                else
+                    readFile(file, Others, logDisp, 1, 1);
+                (*logDisp) << "====================\n";
+            }
+            isGenN *= 0;
+        }
+    }
+    break;
     default:
-        {
-            int sheesh = wxMessageBox("Damn it!", "We've (rather I have) encountered some problems while parsing the source code. "
-                "The devs have made some problems. You can edit the src yourself, or wait for it to be fixed by the dev or cry (the best option)",
-                wxOK | wxICON_ERROR);
-        }
+    {
+        int sheesh = wxMessageBox("Damn it!", "We've (rather I have) encountered some problems while parsing the source code. "
+            "The devs have made some problems. You can edit the src yourself, or wait for it to be fixed by the dev or cry (the best option)",
+            wxOK | wxICON_ERROR);
+    }
     }
     if (logDisp != emptyText)
         logDisp->SetInsertionPoint(0);
 }
 
-bool readTrackerFile(ifstream& file, bool* choices) {
-    str validation;
+bool readTrackerFile(std::ifstream& file, bool* choices) {
+    std::string validation;
     char c, i = 0;
 
     while (getline(file, validation) && i < 2) {
@@ -312,77 +315,85 @@ bool readTrackerFile(ifstream& file, bool* choices) {
 }
 
 
-void writeToal(str& data, str& genre) {
-    str paf = folderN + fsep + "AllLogs.hentai";
-    ifstream fileR(paf);
+void writeToal(std::string& data, std::string& genre) {
+    using f_I = std::ifstream;
+    using f_O = std::ofstream;
+
+    std::string paf = GV::consts::user_data_folder + GV::consts::fsep + "AllLogs.hentai";
+    // write to user's data folder
+
+    f_I fileR(paf);
     if (!fileR.is_open()) {
-        prl(fileR.is_open());
-        prl("くそが! Can't open AllLogs.hentai ditch me");
-        return;
+        wxMessageBox("くそが! Can't open AllLogs.hentai ditch me", ("Can't open file: "  + paf), wxICON_ERROR | wxOK);
+        return; // https://youtu.be/HCHuptVDGKg
     }
-    str tempFilePaf = paf + ".temp";
-    ofstream fileW(tempFilePaf);
-    fileW << (char)1 << endl;
+    std::string tempFilePaf = paf + ".temp";
+    f_O fileW(tempFilePaf);
+    fileW << (char)1 << std::endl;
     {
-        str temp = "";
+        std::string temp = "";
         while (getline(fileR, temp))
-            fileW << temp << endl;
+            fileW << temp << std::endl;
     }
 
     fileR.close();
     fileW.close();
     {
-        ofstream fileReW(paf);
-        ifstream fileRe(tempFilePaf);
+        f_O fileReW(paf);
+        f_I fileRe(tempFilePaf);
 
-        fileReW << (char)1 << endl << genre << endl << data << endl;
+        fileReW << (char)1 << std::endl << genre << std::endl << data << std::endl;
 
         {
-            str temp = "";
+            std::string temp = "";
             while (getline(fileRe, temp))
-                fileReW << temp << endl;
+                fileReW << temp << std::endl;
         }
     }
     fs::remove(tempFilePaf);
 }
 
-void writeToll(str& data, str& genre) {
-    str paf = folderN + fsep + "LastLogs.baka";
-    ifstream fileR(paf);
+void writeToll(std::string& data, std::string& genre) {
+    using f_I = std::ifstream;
+    using f_O = std::ofstream;
+
+    std::string paf = GV::consts::user_data_folder + GV::consts::fsep + "LastLogs.baka";
+    // write to users data folder
+
+    f_I fileR(paf);
     if (!fileR.is_open()) {
-        prl(fileR.is_open());
-        prl("くそが! Can't open LastLogs.baka ditch me");
+        wxMessageBox("くそが! Can't open AllLogs.hentai ditch me", ("Can't open file: " + paf), wxICON_ERROR | wxOK);
         return;
     }
-    str tempFilePaf = paf + ".temp";
+    std::string tempFilePaf = paf + ".temp";
 
-    ofstream fileW(tempFilePaf);
+    f_O fileW(tempFilePaf);
 
-    fileW << (char)1 << endl;
+    fileW << (char)1 << std::endl;
 
     // write to temp file
     {
-        str temp = "";
+        std::string temp = "";
         while (getline(fileR, temp))
-            fileW << temp << endl;
+            fileW << temp << std::endl;
     }
 
     fileR.close();
     fileW.close();
     {
-        ofstream fileReW(paf);
-        ifstream fileRe(tempFilePaf);
+        f_O fileReW(paf);
+        f_I fileRe(tempFilePaf);
 
-        fileReW << (char)1 << endl << genre << endl << data << endl;
+        fileReW << (char)1 << std::endl << genre << std::endl << data << std::endl;
 
         int count = 0;
-        str temp = "";
+        std::string temp = "";
         char c = (char)1;
 
         while (getline(fileRe, temp) && count < 20) {
-            if (temp.find(c) != str::npos)
+            if (temp.find(c) != std::string::npos)
                 count++;
-            fileReW << temp << endl;
+            fileReW << temp << std::endl;
         }
 
     }
@@ -391,21 +402,24 @@ void writeToll(str& data, str& genre) {
 
 
 // a really inefficient way of writing to the starting of file
-void writeFile(str paf, str& data, int option, str name) {
-    str genre = paf.substr(folderN.length() + 1);
-    genre = genre.substr(0, genre.find(fsep));
+void writeFile(std::string paf, std::string& data, int option, std::string name) {
+    using f_I = std::ifstream;
+    using f_O = std::ofstream;
+
+    std::string genre = paf.substr(GV::consts::user_data_folder.length() + 1);
+    genre = genre.substr(0, genre.find(GV::consts::fsep));
 
     if ((option & Create) == Create)
     {
         if (!fs::exists(paf))
         {
-            ofstream file(paf);
+            f_O file(paf);
             if (isspace(name))
             {
-                prl("No name provided");
+                wxMessageBox("No name provided!", "きみはこんきれいってるか？", wxICON_ERROR | wxOK);
                 return;
             }
-            file << name << endl << (char)1 << endl;
+            file << name << std::endl << (char)1 << std::endl;
         }
     }
     if ((option & NQuit) == NQuit)
@@ -414,36 +428,35 @@ void writeFile(str paf, str& data, int option, str name) {
         std::thread wAllLog(writeToal, ref(data), ref(genre));
         std::thread wll(writeToll, ref(data), ref(genre));
 
-        ifstream fileR(paf);
+        f_I fileR(paf);
         if (!fileR.is_open()) {
-            prl(fileR.is_open());
-            prl("Damn! Can't open a file, I am useless ditch me.");
+            wxMessageBox("Damn! Can't open a file, I am useless ditch me.", "😥😥😥😥😥", wxICON_ERROR | wxOK);
             return;
         }
 
-        str tempFilePaf = paf + ".temp", name = "";
+        std::string tempFilePaf = paf + ".temp", name = "";
 
-        ofstream fileW(tempFilePaf);
+        f_O fileW(tempFilePaf);
         getline(fileR, name);
         // write to temp file
         {
-            str temp = "";
+            std::string temp = "";
             while (getline(fileR, temp))
-                fileW << temp << endl;
+                fileW << temp << std::endl;
         }
         fileR.close();
         fileW.close();
 
         // rewriting to the file again
         {
-            ofstream fileReW(paf);
-            ifstream fileR(tempFilePaf);
-            fileReW << name << endl << (char)1 << endl;
-            fileReW << data << endl;
+            f_O fileReW(paf);
+            f_I fileR(tempFilePaf);
+            fileReW << name << std::endl << (char)1 << std::endl;
+            fileReW << data << std::endl;
 
-            str temp = "";
+            std::string temp = "";
             while (getline(fileR, temp))
-                fileReW << temp << endl;
+                fileReW << temp << std::endl;
         }
         fs::remove(tempFilePaf);
 
@@ -454,9 +467,9 @@ void writeFile(str paf, str& data, int option, str name) {
 
 
 // only for settings file
-void writeFile(bool* choices, str paf) {
-    ofstream file(paf);
+void writeFile(bool* choices, std::string paf) {
+    std::ofstream file(paf);
 
-    file << choices[0] << endl;
+    file << choices[0] << std::endl;
     file << choices[1];
 }

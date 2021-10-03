@@ -1,6 +1,7 @@
-#include "fileIO.h"
+#pragma once
+#include <wx/wx.h>
+#include <filesystem>
 
-// cdf = create default directories
 bool settings(bool* choices);
 
 void init(bool* choices);

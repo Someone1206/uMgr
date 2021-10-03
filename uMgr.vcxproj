@@ -163,6 +163,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\FirstSetup.cpp" />
+    <ClCompile Include="src\Passwd.cpp" />
     <ClCompile Include="src\AddEntry.cpp" />
     <ClCompile Include="src\AddGen.cpp" />
     <ClCompile Include="src\NumCtrl.cpp" />
@@ -171,10 +173,14 @@
     <ClCompile Include="src\About.cpp" />
     <ClCompile Include="src\mainFrame.cpp" />
     <ClCompile Include="src\ufw\fileIO.cpp" />
+    <ClCompile Include="src\ufw\GV.cpp" />
     <ClCompile Include="src\ufw\init.cpp" />
     <ClCompile Include="src\uMgr.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\ufw\GV.h" />
+    <ClInclude Include="src\FirstSetup.h" />
+    <ClInclude Include="src\Passwd.h" />
     <ClInclude Include="src\AddEntry.h" />
     <ClInclude Include="src\AddGen.h" />
     <ClInclude Include="src\NumCtrl.h" />
