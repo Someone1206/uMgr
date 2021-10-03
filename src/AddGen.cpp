@@ -1,6 +1,7 @@
 #include "AddGen.h"
 #include "AddEntry.h"
 #include "ufw/init.h"
+#include "ufw/GV.h"
 
 wxBEGIN_EVENT_TABLE(AddGen, wxFrame)
     EVT_BUTTON(ID_ADD, AddGen::addGen)

@@ -8,12 +8,13 @@ wxBEGIN_EVENT_TABLE(AddEntry, wxFrame)
     EVT_BUTTON(ID_CANCEL, AddEntry::cancel)
 wxEND_EVENT_TABLE()
 
-AddEntry::AddEntry(wxWindow* parent, const wxString& title, const wxPoint& pos, const wxString& genre)
+AddEntry::AddEntry(wxWindow* parent, const wxString& title, const wxPoint& pos, const wxString& genre, bool _idk)
     :
     wxFrame(parent, 69, title, pos, wxDefaultSize, wxDEFAULT_FRAME_STYLE | wxFRAME_FLOAT_ON_PARENT) {
     // disable the parent
     this->GetParent()->Enable(false);
     gen_name = genre;
+    idk = _idk;
 
     // the topmost panel, no other way
     wxPanel* __p_pane = new wxPanel(this, 69);
@@ -73,7 +74,8 @@ void AddEntry::addEntry_n_log(wxCommandEvent& evt)
             option = Others;
         AddLog* addLog = new AddLog(this, ("Add log for " + entry_name->GetValue() + " in genre " + gen_name),
             option, entry_name->GetValue(), wxPoint(this->GetPosition().x + 20, this->GetPosition().y + 20), 
-            wxDefaultSize, (folderN + fsep + gen_name + fsep + entry_name->GetValue() + ".baka"));
+            wxDefaultSize, 
+            (GV::consts::user_data_folder + GV::consts::fsep + gen_name + GV::consts::fsep + entry_name->GetValue() + ".baka"));
         addLog->Show();
     }
 }
@@ -85,6 +87,8 @@ void AddEntry::cancel(wxCommandEvent& evt)
 
 AddEntry::~AddEntry()
 {
+    if (idk)
+        this->GetParent()->Destroy();
     this->GetParent()->Enable();
 }
 

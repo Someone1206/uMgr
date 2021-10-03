@@ -21,6 +21,11 @@ private:
     wxButton* allLogs = nullptr;
 
     // Controls that'll never change
+    wxPanel* __p_pane = nullptr;
+    wxBoxSizer* p_sizer = nullptr;
+    wxBoxSizer* l_sizer = nullptr;
+    wxBoxSizer* r_sizer = nullptr;
+    wxBoxSizer* r_btn_sizer = nullptr;
     wxTextCtrl* logs = nullptr;
     wxChoice* list = nullptr;
 
@@ -32,10 +37,10 @@ private:
     wxMenu* quit = nullptr;
 
     //
-    wxChoice* entries = nullptr;
+    wxListBox* entries = nullptr;
     wxButton* addLog = nullptr;
     wxString* entryList = nullptr;
-    str* entryFP = nullptr;
+    std::string* entryFP = nullptr;
 
     // the other needed classes and windows
     SetMgr* setMgr = nullptr;

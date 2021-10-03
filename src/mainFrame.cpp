@@ -1,6 +1,7 @@
 #include "mainFrame.h"
 #include "AddGen.h"
 #include "AddEntry.h"
+#include "ufw/init.h"
 
 wxBEGIN_EVENT_TABLE(mainFrame, wxFrame)
     EVT_BUTTON(ID_BTN1, mainFrame::lastLogsS)
@@ -13,7 +14,7 @@ wxBEGIN_EVENT_TABLE(mainFrame, wxFrame)
     EVT_MENU(ID_ADDENTRY, mainFrame::entryAdd)
 
     EVT_CHOICE(ID_LIST, mainFrame::choice)
-    EVT_CHOICE(ID_E_LIST, mainFrame::entryChoice)
+    EVT_LISTBOX(ID_E_LIST, mainFrame::entryChoice)
 
     EVT_BUTTON(ID_ADDLOG, mainFrame::_addLog_)
 wxEND_EVENT_TABLE()
@@ -33,24 +34,42 @@ mainFrame::mainFrame(const wxString& title, const wxPoint& pos, const wxSize& si
             theme = new wxColor(30, 30, 30);
     }
 
+    __p_pane = new wxPanel(this, 69);
+    __p_pane->SetBackgroundColour(*theme);
+    wxBoxSizer* __p_sizer = new wxBoxSizer(wxVERTICAL);
+    __p_sizer->Add(__p_pane, 1, wxEXPAND);
+
+    p_sizer = new wxBoxSizer(wxHORIZONTAL);
+
+    l_sizer = new wxBoxSizer(wxVERTICAL);
+    r_sizer = new wxBoxSizer(wxVERTICAL);
+
+    p_sizer->Add(l_sizer, 0.5, wxEXPAND | wxALL, 10);
+    p_sizer->Add(r_sizer, 1, wxEXPAND | wxALL, 10);
 
     int len = entriesNGenres() + 1;
     genres = new wxString[len];
     genres[0] = "Log Summary";
     readTrackerFile(emptyFile, G_IndexerAndData, emptyText, 0, genres);
 
-    list = new wxChoice(this, ID_LIST, wxPoint(10, 10), wxDefaultSize, len, genres);
+    list = new wxChoice(__p_pane, ID_LIST, wxDefaultPosition, wxDefaultSize, len, genres);
     list->SetSelection(0);
+    l_sizer->Add(list, 0.5, wxEXPAND | wxALL | wxALIGN_TOP, 15);
 
-    lastLogs = new wxButton(this, ID_BTN1, "&Show Last 10 Logs", wxPoint(10, 10 + 50));
-    allLogs = new wxButton(this, ID_BTN2, "&Show All Logs Saved", wxPoint(10, 50 + 50));
+    r_btn_sizer = new wxBoxSizer(wxHORIZONTAL);
+    lastLogs = new wxButton(__p_pane, ID_BTN1, "&Show Last 10 Logs", wxPoint(10, 10 + 50));
+    allLogs = new wxButton(__p_pane, ID_BTN2, "&Show All Logs Saved", wxPoint(10, 50 + 50));
+    r_btn_sizer->Add(lastLogs, 1, wxEXPAND | wxALL, 10);
+    r_btn_sizer->Add(allLogs, 1, wxEXPAND | wxALL, 10);
+    r_sizer->Add(r_btn_sizer, 0.5, wxEXPAND | wxALL | wxALIGN_TOP, 10);
 
-    logs = new wxTextCtrl(this, 69, wxEmptyString, wxPoint(200, 200), wxSize(200, 250), wxTE_READONLY | wxTE_MULTILINE);
+    logs = new wxTextCtrl(__p_pane, 69, wxEmptyString, wxPoint(200, 200), wxSize(200, 250), wxTE_READONLY | wxTE_MULTILINE | wxTE_AUTO_URL);
     // (*logs) << "Fuck My Pussy harder" << ".\n" << "Cum in me more and more";
     {
-        ifstream file(folderN + fsep + "LastLogs.baka");
+        std::ifstream file(GV::consts::user_data_folder + GV::consts::fsep + "LastLogs.baka");
         readTrackerFile(file, LogList, logs);
     }
+    r_sizer->Add(logs, 2, wxEXPAND | wxALL, 5);
 
     // menu stuffs... ignore this sheesh
     __add__ = new wxMenu();
@@ -74,12 +93,15 @@ mainFrame::mainFrame(const wxString& title, const wxPoint& pos, const wxSize& si
     SetMenuBar(mbar);
 
     CreateStatusBar();
+
+    __p_pane->SetSizerAndFit(p_sizer);
+    this->SetSizerAndFit(__p_sizer);
 }
 
 void mainFrame::lastLogsS(wxCommandEvent& evt)
 {
     if (_allLog) {
-        ifstream file(folderN + fsep + "LastLogs.baka");
+        std::ifstream file(GV::consts::user_data_folder + GV::consts::fsep + "LastLogs.baka");
         readTrackerFile(file, LogList, logs);
     }
     _allLog = false;
@@ -87,7 +109,7 @@ void mainFrame::lastLogsS(wxCommandEvent& evt)
 
 void mainFrame::allLogsS(wxCommandEvent& evt) {
     if (!_allLog) {
-        ifstream file(folderN + fsep + "AllLogs.hentai");
+        std::ifstream file(GV::consts::user_data_folder + GV::consts::fsep + "AllLogs.hentai");
         readTrackerFile(file, LogList, logs);
     }
     _allLog = true;
@@ -112,19 +134,11 @@ void mainFrame::onSet(wxCommandEvent& evt)
 
 void mainFrame::choice(wxCommandEvent& evt)
 {
-    str opt = str(genres[list->GetSelection()].mb_str());
-    static str _prevOpt = str(genres[0].mb_str());
+    std::string opt = std::string(genres[list->GetSelection()].mb_str());
+    static std::string _prevOpt = std::string(genres[0].mb_str());
 
     if (opt != _prevOpt) { // if current selection != previous selection
-        if (opt != str(genres[0].mb_str())) { // if != to log summary
-            __add__->Append(ID_ADDENTRY, "&Add Entry", "Add a New Entry");
-            if (allLogs != nullptr) {
-                allLogs->Destroy();
-                lastLogs->Destroy();
-                allLogs = nullptr;
-                lastLogs = nullptr;
-            }
-
+        if (opt != std::string(genres[0].mb_str())) { // if != to log summary
             entryList = nullptr;
             entryFP = nullptr;
 
@@ -132,22 +146,22 @@ void mainFrame::choice(wxCommandEvent& evt)
                 entries->Destroy();
             entries = nullptr;
 
-            int len = entriesNGenres((folderN + fsep + opt), true);
+            int len = entriesNGenres((GV::consts::user_data_folder + GV::consts::fsep + opt), true);
 
             if (addLog == nullptr)
-                addLog = new wxButton(this, ID_ADDLOG, "&Add Log", wxPoint(10, 10 + 50 + 50), wxDefaultSize);
+                addLog = new wxButton(__p_pane, ID_ADDLOG, "&Add Log", wxDefaultPosition, wxDefaultSize);
             if (len != 0) // if no entries present
             {
-                entryList = new wxString[len];
-                entryFP = new str[len];
-                readTrackerFile(emptyFile, Entries, emptyText, 0, entryList, (folderN + fsep + opt), false, entryFP);
-                entries = new wxChoice(this, ID_E_LIST, wxPoint(10, 10 + 50), wxDefaultSize, len, entryList);
+                entryList = new wxString[len]; //
+                entryFP = new std::string[len];
+                readTrackerFile(emptyFile, Entries, emptyText, 0, entryList, (GV::consts::user_data_folder + GV::consts::fsep + opt), false, entryFP);
+                entries = new wxListBox(__p_pane, ID_E_LIST, wxDefaultPosition, wxDefaultSize, len, entryList, wxLB_SINGLE);
                 entries->SetSelection(0);
                 addLog->Enable(true);
             }
             else {
                 wxString noEntries[1] = { "No Entries Made" };
-                entries = new wxChoice(this, ID_E_LIST, wxPoint(10, 10 + 50), wxDefaultSize, 1, noEntries);
+                entries = new wxListBox(__p_pane, ID_E_LIST, wxDefaultPosition, wxDefaultSize, 1, noEntries);
                 entries->SetSelection(0);
                 addLog->Enable(false);
                 logs->Clear();
@@ -165,25 +179,45 @@ void mainFrame::choice(wxCommandEvent& evt)
 
             if (len != 0)
             {
-                ifstream file(entryFP[0]);
+                std::ifstream file(entryFP[0]);
                 readFile(file, fileRop, logs, 0, 0, true);
+            }
+
+            if (allLogs != nullptr) {
+                r_btn_sizer->Detach(lastLogs);
+                r_btn_sizer->Detach(allLogs);
+                __add__->Append(ID_ADDENTRY, "&Add Entry", "Add a New Entry");
+                allLogs->Destroy();
+                lastLogs->Destroy();
+                allLogs = nullptr;
+                lastLogs = nullptr;
+                r_btn_sizer->Add(addLog, 1, wxEXPAND | wxALL, 10);
+                l_sizer->Add(entries, 1, wxEXPAND | wxALL, 10);
             }
         }
         else {
             __add__->Delete(ID_ADDENTRY);
+            r_btn_sizer->Detach(addLog);
+            l_sizer->Detach(entries);
             entries->Destroy();
             addLog->Destroy();
             entries = nullptr;
             addLog = nullptr;
 
-            ifstream file(folderN + fsep + "LastLogs.baka");
+            std::ifstream file(GV::consts::user_data_folder + GV::consts::fsep + "LastLogs.baka");
             readTrackerFile(file, LogList, logs);
 
-            lastLogs = new wxButton(this, ID_BTN1, "&Show Last 10 Logs", wxPoint(10, 10 + 50));
-            allLogs = new wxButton(this, ID_BTN2, "&Show All Logs Saved", wxPoint(10, 50 + 50));
+            lastLogs = new wxButton(__p_pane, ID_BTN1, "&Show Last 10 Logs", wxDefaultPosition);
+            allLogs = new wxButton(__p_pane, ID_BTN2, "&Show All Logs Saved", wxDefaultPosition);
+
+            r_btn_sizer->Add(lastLogs, 1, wxEXPAND | wxALL, 10);
+            r_btn_sizer->Add(allLogs, 1, wxEXPAND | wxALL, 10);
         }
         _prevOpt = opt;
     }
+
+
+
 }
 
 // choice for entries
@@ -193,7 +227,7 @@ void mainFrame::entryChoice(wxCommandEvent& evt)
     static int prevEindex = 0;
 
     if (Eindex != prevEindex) {
-        ifstream file(entryFP[Eindex]);
+        std::ifstream file(entryFP[Eindex]);
         logs->Clear();
         readFile(file, fileRop, logs, 0, 0, true);
         prevEindex = Eindex;
@@ -224,10 +258,10 @@ void mainFrame::genAdd(wxCommandEvent& evt)
 
 void mainFrame::entryAdd(wxCommandEvent& evt)
 {
-    AddEntry* addEntry = new AddEntry(this, 
+    AddEntry* addEntry = new AddEntry(this,
         ("Add a new Entry for genre " + genres[list->GetSelection()]),
         wxPoint(this->GetPosition().x + this->GetClientSize().x / 4, this->GetPosition().y + this->GetClientSize().y / 2),
-        genres[list->GetSelection()]
+        genres[list->GetSelection()], false
     );
     addEntry->Show();
 }

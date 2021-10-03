@@ -1,4 +1,6 @@
 #include "SetMgr.h"
+#include "ufw/init.h"
+#include "ufw/fileIO.h"
 
 wxBEGIN_EVENT_TABLE(SetMgr, wxFrame)
     EVT_BUTTON(ID_OKAI, SetMgr::kBai)

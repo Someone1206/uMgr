@@ -1,6 +1,5 @@
 #pragma once
 #include <wx/wx.h>
-#include "ufw/init.h"
 
 class SetMgr :
     public wxFrame
