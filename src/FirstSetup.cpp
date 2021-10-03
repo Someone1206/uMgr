@@ -1,4 +1,5 @@
 #include "FirstSetup.h"
+
 wxBEGIN_EVENT_TABLE(FirstSetup, wxFrame)
     EVT_CHOICE(ID_CHOICES, FirstSetup::choice)
     EVT_BUTTON(ID_GO, FirstSetup::go)
@@ -7,7 +8,6 @@ wxEND_EVENT_TABLE()
 FirstSetup::FirstSetup(const wxString& title, const wxString& this_paf)
     : wxFrame(nullptr, 69, title, wxDefaultPosition, wxDefaultSize)
 {
-    // gobergardens
     wxPanel* __p_pane = new wxPanel(this, 69);
     wxBoxSizer* __p_sizer = new wxBoxSizer(wxVERTICAL);
     __p_sizer->Add(__p_pane, 1, wxEXPAND);
@@ -15,13 +15,12 @@ FirstSetup::FirstSetup(const wxString& title, const wxString& this_paf)
 
     wxString __choices[3] = {
         ("User Folder ( " + GV::consts::uPaf.string() + GV::consts::fsep + GV::consts::uName + " )"),
-        ("App Local Folder ( " + this_paf + GV::consts::fsep + GV::consts::uName + " )"),
+        ("App Local Folder ( " + this_paf + GV::consts::user_data_folder + GV::consts::fsep + GV::consts::uName + " )"),
         "Other"
     };
-    int fck;
-    if ((fck = this_paf.Find(GV::consts::uPaf.string())) == 0)
+
+    if (this_paf.Find(GV::consts::uPaf.string()) == 0)
     {
-        wxMessageBox(GV::consts::uPaf.string(), "debugx1100");
         __choices[1] = __choices[2];
         len = 2;
     }
