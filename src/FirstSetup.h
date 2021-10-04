@@ -10,6 +10,7 @@ public:
 
 private:
     char len = 3;
+    wxString __choices[3];
 
     wxChoice* paf_fr_data = nullptr;
 
@@ -17,7 +18,7 @@ private:
     wxButton* browse_btn = nullptr;
 
     wxTextCtrl* pwd = nullptr;
-    wxTextCtrl* re_pwn = nullptr;
+    wxTextCtrl* re_pwd = nullptr;
 
     void choice(wxCommandEvent& evt);
     void go(wxCommandEvent& evt);
@@ -27,7 +28,9 @@ private:
     {
         ID_CHOICES,
         ID_GO,
-        ID_BROWSE
+        ID_BROWSE,
+        ID_PWD,
+        ID_RE_PWD
     };
 };
 
