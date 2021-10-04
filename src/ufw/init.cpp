@@ -1,9 +1,6 @@
 #include "init.h"
 #include <fstream>
-#include <wx/filename.h>
-#include <wx/stdpaths.h>
 #include "fileIO.h"
-#include "../FirstSetup.h"
 
 
 bool settings(bool* choices) {
@@ -23,46 +20,17 @@ bool settings(bool* choices) {
 
 void init(bool* choices)
 {
-#if _WIN32
-    std::filesystem::path __path__;
-    TCHAR paf[MAX_PATH];
-    SHGetFolderPath(nullptr, CSIDL_PROFILE, nullptr, 0, paf);
-    LPWSTR _paf = paf;
-    {
-        bool ret = PathAppend(_paf, L"uMgr_A_Data");
-    }
-    __path__ = _paf;
-    GV::consts::c_app_data = __path__.string();
-    CreateDirectory(_paf, nullptr);
-    SetFileAttributes(_paf, FILE_ATTRIBUTE_HIDDEN);
-    //CoTaskMemFree(paf);
-    //CoTaskMemFree(_paf);
-#else
-    mkdir(uPaf + ".uMgr_A_Data");
-    c_app_data = uPaf.wstring() + ".uMgr_A_Data";
-#endif // _WIN32
 
-    if (!std::filesystem::exists((GV::consts::c_app_data + GV::consts::fsep + "initialised"))) {
-        wxFileName exepaf(wxStandardPaths::Get().GetExecutablePath());
-        FirstSetup* setup = new FirstSetup("uMgr Setup", exepaf.GetPath());
-        setup->Show();
-    }
+    GV::consts::user_data_folder = "uMgrData";
 
-    // password stuffs...
-    
-    // if passwords match,
-
-    GV::consts::user_data_folder = "uMgrData" + GV::consts::fsep + GV::consts::uName;
-    // just for testing
-
-    fs::create_directory(GV::consts::user_data_folder);
-    fs::create_directory(GV::consts::c_app_data);
+    fs::create_directory(GV::consts::user_data_folder); //
+    fs::create_directory(GV::consts::c_app_data);       //
 
     {
         std::string paf = GV::consts::c_app_data + GV::consts::fsep + "Settings.baka";
         if (!fs::exists((paf))) {
-            std::ofstream f(paf);
-            f << 1 << std::endl;
+                std::ofstream f(paf);
+        f << 1 << std::endl;
             f << 0;
             f.close();
         }
