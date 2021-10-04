@@ -3,7 +3,9 @@
 // #include <crtdbg.h>
 
 #include <wx/wx.h>
-#include "mainFrame.h"
+#include <wx/filename.h>
+#include <wx/stdpaths.h>
+#include "FirstSetup.h"
 
 class uMgr
     : public wxApp {
@@ -11,7 +13,7 @@ public:
     virtual bool OnInit();
 
 private:
-    mainFrame* frame = nullptr;
+    FirstSetup* f = nullptr;
 };
 
 wxIMPLEMENT_APP(uMgr);
@@ -24,7 +26,29 @@ bool uMgr::OnInit() {
     // _CrtSetBreakAlloc(6369);
     // _CrtSetBreakAlloc(16250);
 
-    frame = new mainFrame("Kill Me", wxDefaultPosition, wxSize(640, 480));
-    frame->Show();
+#if _WIN32
+    std::filesystem::path __path__;
+    TCHAR paf[MAX_PATH];
+    SHGetFolderPath(nullptr, CSIDL_PROFILE, nullptr, 0, paf);
+    LPWSTR _paf = paf;
+    {
+        bool ret = PathAppend(_paf, L"uMgr_A_Data");
+    }
+    __path__ = _paf;
+    GV::consts::c_app_data = __path__.string();
+    CreateDirectory(_paf, nullptr);
+    SetFileAttributes(_paf, FILE_ATTRIBUTE_HIDDEN);
+    //CoTaskMemFree(paf);
+    //CoTaskMemFree(_paf);
+#else
+    mkdir(uPaf + ".uMgr_A_Data");
+    GV::consts::c_app_data = uPaf.string() + ".uMgr_A_Data";
+#endif // _WIN32
+
+    if (!std::filesystem::exists((GV::consts::c_app_data + GV::consts::fsep + "initialised"))) {
+        wxFileName exepaf(wxStandardPaths::Get().GetExecutablePath());
+        f = new FirstSetup("Setup", exepaf.GetPath());
+        f->Show();
+    }
     return true;
 }
