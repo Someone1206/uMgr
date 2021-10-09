@@ -1,5 +1,6 @@
 #include "fileIO.h"
 #include <thread>
+#include <sstream>
 
 bool isspace(std::string& string1)
 {
@@ -109,12 +110,14 @@ void mt_Field(std::string& data, wxTextCtrl* logDisp)
     if (data == "")
     {
         logDisp->SetDefaultStyle(wxTextAttr(wxNullColour, wxColor(200, 200, 255)));
-        (*logDisp) << data << '\n';
+        (*logDisp) << "<-- Empty -->" << '\n';
         logDisp->SetDefaultStyle(wxTextAttr(wxNullColour));
         return;
     }
     (*logDisp) << data << '\n';
 }
+
+///
 
 void readFile(std::ifstream& file, ReadOptions options, wxTextCtrl* logDisp, int history, bool isLLog, bool clearAtS) {
 
@@ -122,8 +125,8 @@ void readFile(std::ifstream& file, ReadOptions options, wxTextCtrl* logDisp, int
         int smth = wxMessageBox("Can't Open File!", "", wxOK | wxICON_ERROR);
 
     if (file.peek() == std::ifstream::traits_type::eof()) {
-        logDisp->Clear();
-        (*logDisp) << "No Logs Made";
+        std::string str = "";
+        mt_Field(str, logDisp);
         return;
     }
 
@@ -283,8 +286,11 @@ void readTrackerFile(std::ifstream& file, TrackerFileOptions tfo, wxTextCtrl* lo
     break;
     default:
     {
-        int sheesh = wxMessageBox("Damn it!", "We've (rather I have) encountered some problems while parsing the source code. "
-            "The devs have made some problems. You can edit the src yourself, or wait for it to be fixed by the dev or cry (the best option)",
+        int sheesh = wxMessageBox("We've (rather I have) encountered some problems"
+            " while parsing the source code. "
+            "The devs have made some problems. You can"
+            " edit the src yourself, or wait for it to be fixed by the dev or cry (the best option)",
+            "Damn it!", 
             wxOK | wxICON_ERROR);
     }
     }
@@ -308,7 +314,6 @@ bool readTrackerFile(std::ifstream& file, bool* choices) {
         i++;
     }
 
-
     choices = nullptr;
 
     return true;
@@ -325,32 +330,20 @@ void writeToal(std::string& data, std::string& genre) {
     f_I fileR(paf);
     if (!fileR.is_open()) {
         wxMessageBox("くそが! Can't open AllLogs.hentai ditch me", ("Can't open file: "  + paf), wxICON_ERROR | wxOK);
-        return; // https://youtu.be/HCHuptVDGKg
+        return;
     }
     std::string tempFilePaf = paf + ".temp";
     f_O fileW(tempFilePaf);
-    fileW << (char)1 << std::endl;
+    fileW << (char)1 << '\n' << genre << '\n' << data << '\n' << (char)1;
     {
         std::string temp = "";
         while (getline(fileR, temp))
-            fileW << temp << std::endl;
+            fileW << temp << "\n";
     }
-
     fileR.close();
     fileW.close();
-    {
-        f_O fileReW(paf);
-        f_I fileRe(tempFilePaf);
-
-        fileReW << (char)1 << std::endl << genre << std::endl << data << std::endl;
-
-        {
-            std::string temp = "";
-            while (getline(fileRe, temp))
-                fileReW << temp << std::endl;
-        }
-    }
-    fs::remove(tempFilePaf);
+    fs::remove(paf);
+    fs::rename(tempFilePaf, paf);
 }
 
 void writeToll(std::string& data, std::string& genre) {
@@ -369,35 +362,20 @@ void writeToll(std::string& data, std::string& genre) {
 
     f_O fileW(tempFilePaf);
 
-    fileW << (char)1 << std::endl;
+    fileW << (char)1 << '\n' << genre << '\n' << data << '\n' << (char)1;
 
     // write to temp file
     {
         std::string temp = "";
         while (getline(fileR, temp))
-            fileW << temp << std::endl;
+            fileW << temp << '\n';
     }
 
     fileR.close();
     fileW.close();
-    {
-        f_O fileReW(paf);
-        f_I fileRe(tempFilePaf);
-
-        fileReW << (char)1 << std::endl << genre << std::endl << data << std::endl;
-
-        int count = 0;
-        std::string temp = "";
-        char c = (char)1;
-
-        while (getline(fileRe, temp) && count < 20) {
-            if (temp.find(c) != std::string::npos)
-                count++;
-            fileReW << temp << std::endl;
-        }
-
-    }
-    fs::remove(tempFilePaf);
+    
+    fs::remove(paf);
+    fs::rename(tempFilePaf, paf);
 }
 
 
@@ -419,7 +397,7 @@ void writeFile(std::string paf, std::string& data, int option, std::string name)
                 wxMessageBox("No name provided!", "きみはこんきれいってるか？", wxICON_ERROR | wxOK);
                 return;
             }
-            file << name << std::endl << (char)1 << std::endl;
+            file << name << '\n' << (char)1 << '\n';
         }
     }
     if ((option & NQuit) == NQuit)
@@ -442,23 +420,13 @@ void writeFile(std::string paf, std::string& data, int option, std::string name)
         {
             std::string temp = "";
             while (getline(fileR, temp))
-                fileW << temp << std::endl;
+                fileW << temp << '\n';
         }
         fileR.close();
         fileW.close();
 
-        // rewriting to the file again
-        {
-            f_O fileReW(paf);
-            f_I fileR(tempFilePaf);
-            fileReW << name << std::endl << (char)1 << std::endl;
-            fileReW << data << std::endl;
-
-            std::string temp = "";
-            while (getline(fileR, temp))
-                fileReW << temp << std::endl;
-        }
-        fs::remove(tempFilePaf);
+        fs::remove(paf);
+        fs::rename(tempFilePaf, paf);
 
         wll.join();
         wAllLog.join();
@@ -470,6 +438,6 @@ void writeFile(std::string paf, std::string& data, int option, std::string name)
 void writeFile(bool* choices, std::string paf) {
     std::ofstream file(paf);
 
-    file << choices[0] << std::endl;
+    file << choices[0] << '\n';
     file << choices[1];
 }
