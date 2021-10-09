@@ -95,6 +95,13 @@ AddLog::AddLog(wxWindow* frame, const wxString& title, ReadOptions readOption, c
         param1->Enable();
         param2->Enable();
     }
+    else if (readOption == Movies) {
+        _param1_->SetLabel("Part (optional):");
+        param1->SetValue("");
+
+        _param1_->Enable();
+        param1->Enable();
+    }
 
 
 
