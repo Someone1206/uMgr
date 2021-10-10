@@ -5,6 +5,7 @@
 #include <wx/wx.h>
 #include <wx/filename.h>
 #include <wx/stdpaths.h>
+#include "ufw/GV.h"
 #include "FirstSetup.h"
 
 class uMgr
@@ -45,10 +46,13 @@ bool uMgr::OnInit() {
     GV::consts::c_app_data = uPaf.string() + ".uMgr_A_Data";
 #endif // _WIN32
 
+    bool init = false;
+
     if (!std::filesystem::exists((GV::consts::c_app_data + GV::consts::fsep + "initialised"))) {
         wxFileName exepaf(wxStandardPaths::Get().GetExecutablePath());
-        f = new FirstSetup("Setup", exepaf.GetPath());
+        f = new FirstSetup("Setup", exepaf.GetPath(), init);
         f->Show();
+        f->Centre(wxBOTH);
     }
     return true;
 }

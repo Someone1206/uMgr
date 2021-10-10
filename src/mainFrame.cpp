@@ -66,7 +66,7 @@ mainFrame::mainFrame(const wxString& title, const wxPoint& pos, const wxSize& si
     logs = new wxTextCtrl(__p_pane, 69, wxEmptyString, wxPoint(200, 200), wxSize(200, 250), wxTE_READONLY | wxTE_MULTILINE | wxTE_AUTO_URL);
     // (*logs) << "Fuck My Pussy harder" << ".\n" << "Cum in me more and more";
     {
-        std::ifstream file(GV::consts::user_data_folder + GV::consts::fsep + "LastLogs.baka");
+        std::ifstream file(GV::consts::user_data_folder + "LastLogs.baka");
         readTrackerFile(file, LogList, logs);
     }
     r_sizer->Add(logs, 2, wxEXPAND | wxALL, 5);
@@ -101,7 +101,7 @@ mainFrame::mainFrame(const wxString& title, const wxPoint& pos, const wxSize& si
 void mainFrame::lastLogsS(wxCommandEvent& evt)
 {
     if (_allLog) {
-        std::ifstream file(GV::consts::user_data_folder + GV::consts::fsep + "LastLogs.baka");
+        std::ifstream file(GV::consts::user_data_folder + "LastLogs.baka");
         readTrackerFile(file, LogList, logs);
     }
     _allLog = false;
@@ -109,7 +109,7 @@ void mainFrame::lastLogsS(wxCommandEvent& evt)
 
 void mainFrame::allLogsS(wxCommandEvent& evt) {
     if (!_allLog) {
-        std::ifstream file(GV::consts::user_data_folder + GV::consts::fsep + "AllLogs.hentai");
+        std::ifstream file(GV::consts::user_data_folder + "AllLogs.hentai");
         readTrackerFile(file, LogList, logs);
     }
     _allLog = true;
@@ -146,7 +146,7 @@ void mainFrame::choice(wxCommandEvent& evt)
                 entries->Destroy();
             entries = nullptr;
 
-            int len = entriesNGenres((GV::consts::user_data_folder + GV::consts::fsep + opt), true);
+            int len = entriesNGenres((GV::consts::user_data_folder + opt), true);
 
             if (addLog == nullptr)
                 addLog = new wxButton(__p_pane, ID_ADDLOG, "&Add Log", wxDefaultPosition, wxDefaultSize);
@@ -154,7 +154,7 @@ void mainFrame::choice(wxCommandEvent& evt)
             {
                 entryList = new wxString[len]; //
                 entryFP = new std::string[len];
-                readTrackerFile(emptyFile, Entries, emptyText, 0, entryList, (GV::consts::user_data_folder + GV::consts::fsep + opt), false, entryFP);
+                readTrackerFile(emptyFile, Entries, emptyText, 0, entryList, (GV::consts::user_data_folder + opt), false, entryFP);
                 entries = new wxListBox(__p_pane, ID_E_LIST, wxDefaultPosition, wxDefaultSize, len, entryList, wxLB_SINGLE);
                 entries->SetSelection(0);
                 addLog->Enable(true);
