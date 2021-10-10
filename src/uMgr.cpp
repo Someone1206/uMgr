@@ -37,10 +37,6 @@ bool uMgr::OnInit() {
     }
     __path__ = _paf;
     GV::consts::c_app_data = __path__.string();
-    CreateDirectory(_paf, nullptr);
-    SetFileAttributes(_paf, FILE_ATTRIBUTE_HIDDEN);
-    //CoTaskMemFree(paf);
-    //CoTaskMemFree(_paf);
 #else
     mkdir(uPaf + ".uMgr_A_Data");
     GV::consts::c_app_data = uPaf.string() + ".uMgr_A_Data";
