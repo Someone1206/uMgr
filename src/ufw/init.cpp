@@ -20,8 +20,11 @@ bool settings(bool* choices) {
 
 void init(bool* choices)
 {
-
-    GV::consts::user_data_folder = "uMgrData";
+    {
+        std::string paf = GV::consts::c_app_data + FSEP + "pafs.hentai";
+        std::ifstream paf_file(paf);
+        getline(paf_file, GV::consts::user_data_folder);
+    }
 
     fs::create_directory(GV::consts::user_data_folder); //
     fs::create_directory(GV::consts::c_app_data);       //
@@ -29,8 +32,8 @@ void init(bool* choices)
     {
         std::string paf = GV::consts::c_app_data + GV::consts::fsep + "Settings.baka";
         if (!fs::exists((paf))) {
-                std::ofstream f(paf);
-        f << 1 << std::endl;
+            std::ofstream f(paf);
+            f << 1 << std::endl;
             f << 0;
             f.close();
         }
