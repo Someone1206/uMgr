@@ -47,8 +47,8 @@ bool uMgr::OnInit() {
     if (!std::filesystem::exists((GV::consts::c_app_data + GV::consts::fsep + "initialised"))) {
         wxFileName exepaf(wxStandardPaths::Get().GetExecutablePath());
         f = new FirstSetup("Setup", exepaf.GetPath(), init);
-        f->Show();
         f->Centre(wxBOTH);
+        f->Show();
     }
     return true;
 }

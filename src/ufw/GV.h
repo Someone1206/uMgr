@@ -34,3 +34,4 @@ namespace GV
 } // namespace GV
 
 #define FSEP GV::consts::fsep
+#define folderN "uMgrData"

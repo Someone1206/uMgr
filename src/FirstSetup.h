@@ -1,6 +1,5 @@
 #pragma once
 #include <wx/wx.h>
-#include "ufw/GV.h"
 
 class FirstSetup
     : public wxFrame
@@ -11,14 +10,10 @@ public:
 private:
     char len = 3;
     bool* __init;
+    bool do_smth = 0;
     wxString __choices[3];
     wxString _this_paf;
     wxString paf_selected = "";
-    wxString det_str = "Your logs will be stored in the following directory:\n"
-                    "" + GV::consts::uPaf.string() + FSEP + GV::consts::user_data_folder + ""
-                    "\nThis is the recommended path since your logs will be safe from intruders (other "
-                    "users on your OS) via the filesystem\n"
-                    "";
 
     wxStaticText* __paf_sel = nullptr;
     wxStaticText* details = nullptr;
@@ -32,8 +27,12 @@ private:
     wxTextCtrl* pwd = nullptr;
     wxTextCtrl* re_pwd = nullptr;
 
+    wxStaticText* pwdtxt = nullptr;
+    wxStaticText* pwdtxt2 = nullptr;
+
     void choice(wxCommandEvent& evt);
     void browse(wxCommandEvent& evt);
+    void a_pwd(wxCommandEvent& evt);
     void go(wxCommandEvent& evt);
     void cancel(wxCommandEvent& evt);
     wxDECLARE_EVENT_TABLE();
@@ -44,6 +43,7 @@ private:
         ID_GO,
         ID_CANC,
         ID_BROWSE,
+        ID_A_PWD_,
         ID_PWD,
         ID_RE_PWD
     };
