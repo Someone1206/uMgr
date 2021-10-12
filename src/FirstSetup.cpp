@@ -11,13 +11,12 @@ wxBEGIN_EVENT_TABLE(FirstSetup, wxFrame)
     EVT_CHECKBOX(ID_A_PWD_, FirstSetup::a_pwd)
 wxEND_EVENT_TABLE()
 
-FirstSetup::FirstSetup(const wxString& title, const wxString& this_paf, bool& init)
+FirstSetup::FirstSetup(const wxString& title, const wxString& this_paf)
     : wxFrame(nullptr, 69, title, wxDefaultPosition, wxDefaultSize, wxCAPTION | wxMINIMIZE_BOX 
         | wxCLOSE_BOX | wxSYSTEM_MENU)
     // it ain't resizable
 {
     _this_paf = this_paf;
-    __init = &init;
     GV::consts::user_data_folder = GV::consts::uPaf.string() + FSEP + folderN + FSEP;
 
     wxPanel* __p_pane = new wxPanel(this, 69);
@@ -187,17 +186,15 @@ void FirstSetup::a_pwd(wxCommandEvent& evt)
 
 void FirstSetup::go(wxCommandEvent& evt)
 {
+    if (paf_fr_data->GetSelection() == len - 1)
     {
         std::string tmp = std::string(paf_selected.mb_str());
-        if (isspace(tmp) && paf_fr_data->GetSelection() == len - 1)
+        if (isspace(tmp))
         {
-            if (isspace(tmp))
-            {
-                wxMessageBox("No folder selected!");
-                return;
-            }
-            GV::consts::user_data_folder = paf_selected;
+            wxMessageBox("No folder selected!");
+            return;
         }
+        GV::consts::user_data_folder = paf_selected;
     }
 
     bool __a_pwd = 0;

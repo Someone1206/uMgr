@@ -5,7 +5,7 @@ class FirstSetup
     : public wxFrame
 {
 public:
-    FirstSetup(const wxString& title, const wxString& this_paf, bool& init);
+    FirstSetup(const wxString& title, const wxString& this_paf);
 
 private:
     char len = 3;
