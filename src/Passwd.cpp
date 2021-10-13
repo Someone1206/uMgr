@@ -7,12 +7,10 @@ wxBEGIN_EVENT_TABLE(Passwd,wxFrame)
     EVT_BUTTON(ID_F_PWD, Passwd::_f_pwd)
 wxEND_EVENT_TABLE()
 
-Passwd::Passwd(const wxString& title, std::ifstream& pwd_file)
+Passwd::Passwd(const wxString& title)
     :wxFrame(nullptr, 69, title, wxDefaultPosition, wxDefaultSize, wxCAPTION | wxMINIMIZE_BOX
         | wxCLOSE_BOX | wxSYSTEM_MENU)
 {
-    _pwd_file = &pwd_file;
-
     wxPanel* __p_pane = new wxPanel(this);
     wxBoxSizer* _p__s = new wxBoxSizer(wxVERTICAL);
     _p__s->Add(__p_pane, wxEXPAND);
@@ -48,8 +46,9 @@ void Passwd::_r_g(wxCommandEvent& evt)
 {
     wxString pwd_ff;
     {
+        std::ifstream pwd_file((GV::consts::c_app_data + FSEP + "pwd.hentai"));
         std::string tmp;
-        getline(*_pwd_file, tmp);
+        getline(pwd_file, tmp);
         pwd_ff = tmp;
     }
 

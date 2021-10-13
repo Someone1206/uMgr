@@ -6,11 +6,9 @@ class Passwd
     : public wxFrame
 {
 public:
-    Passwd(const wxString& title, std::ifstream& pwd_file);
+    Passwd(const wxString& title);
 
 private:
-    std::ifstream* _pwd_file = nullptr;
-
     wxTextCtrl* pwd = nullptr;
 
     void _r_g(wxCommandEvent& evt);
