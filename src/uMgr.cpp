@@ -7,14 +7,14 @@
 #include <wx/stdpaths.h>
 #include "ufw/GV.h"
 #include "FirstSetup.h"
+#include "Passwd.h"
+#include "mainFrame.h"
 
 class uMgr
     : public wxApp {
 public:
     virtual bool OnInit();
 
-private:
-    FirstSetup* f = nullptr;
 };
 
 wxIMPLEMENT_APP(uMgr);
@@ -42,13 +42,42 @@ bool uMgr::OnInit() {
     GV::consts::c_app_data = uPaf.string() + ".uMgr_A_Data";
 #endif // _WIN32
 
-    bool init = false;
+    bool hasPwd = false;
 
-    if (!std::filesystem::exists((GV::consts::c_app_data + GV::consts::fsep + "initialised"))) {
+    if (!std::filesystem::exists((GV::consts::c_app_data + GV::consts::fsep + "initialised.baka"))) {
         wxFileName exepaf(wxStandardPaths::Get().GetExecutablePath());
-        f = new FirstSetup("Setup", exepaf.GetPath(), init);
+        FirstSetup* f = new FirstSetup("Setup", exepaf.GetPath());
         f->Centre(wxBOTH);
         f->Show();
     }
+    else if (std::filesystem::exists((GV::consts::c_app_data + FSEP + "pwd.hentai")))
+    {
+        while (true) // :>
+        {
+            {
+                std::ifstream pwd_f((GV::consts::c_app_data + FSEP + "pwd.hentai"));
+                if (pwd_f.peek() == std::ifstream::traits_type::eof())
+                    break;  // :>
+
+                std::string tmp = "";
+                getline(pwd_f, tmp);
+                if (tmp == "")
+                    break;
+                pwd_f.close();
+            }
+
+            hasPwd = true;
+            Passwd* pwd = new Passwd("Authentication");
+            pwd->Center(wxBOTH);
+            pwd->Show();
+            break;
+        }
+    }
+    if (!hasPwd)
+    {
+        wxMessageBox("debug --- mainframe");
+        return false;
+    }
+
     return true;
 }
