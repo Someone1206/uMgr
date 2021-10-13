@@ -232,31 +232,31 @@ wxString AddLog::formatDate(wxString string1)
         switch (monthNo_2)
         {
         case 1:
-            month = "Jan";
+            month = "January";
             break;
         case 2:
-            month = "Feb";
+            month = "February";
             break;
         case 3:
-            month = "Mar";
+            month = "March";
             break;
         case 4:
-            month = "Apr";
+            month = "April";
             break;
         case 5:
             month = "May";
             break;
         case 6:
-            month = "Jun";
+            month = "June";
             break;
         case 7:
-            month = "Jul";
+            month = "July";
             break;
         case 8:
-            month = "Aug";
+            month = "August";
             break;
         case 9:
-            month = "Sep";
+            month = "September";
             break;
         default:
             break;
@@ -266,13 +266,13 @@ wxString AddLog::formatDate(wxString string1)
         switch (monthNo_2)
         {
         case 0:
-            month = "Oct";
+            month = "Jimtober";   // 🥳🥳❤❤💜💜😊🎆🎇✨🎉🎊💜💜❤❤🥳🥳
             break;
         case 1:
-            month = "Nov";
+            month = "November";
             break;
         case 2:
-            month = "Dec";
+            month = "December";
             break;
         default:
             break;
