@@ -218,6 +218,8 @@ void FirstSetup::go(wxCommandEvent& evt)
             wxMessageBox("Warning: Password contains only spaces\\tabs.", "Uhh Ok!", wxOK | wxICON_WARNING);
         __a_pwd = 1;
     }
+    else if (std::filesystem::exists((GV::consts::c_app_data + FSEP + "pwd.hentai")))
+        std::filesystem::remove((GV::consts::c_app_data + FSEP + "pwd.hentai"));
 
 #if _WIN32
     {
@@ -251,12 +253,9 @@ void FirstSetup::go(wxCommandEvent& evt)
             std::filesystem::perms::owner_all,
             std::filesystem::perm_options::add);
     
-    // init(set);
-    // mainFrame* frm = new mainFrame("uMgr", wxDefaultPosition, wxDefaultSize);
-    // Show(false);
-    // frm->Show();
-
-    // delete _this_paf;
+    mainFrame* hhh = new mainFrame("kill me", wxDefaultPosition, wxDefaultSize);
+    this->Show(false);
+    hhh->Show();
 
     Destroy();
 }

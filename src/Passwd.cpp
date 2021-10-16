@@ -1,5 +1,7 @@
 #include "Passwd.h"
+#include "mainFrame.h"
 #include "ufw/GV.h"
+
 
 wxBEGIN_EVENT_TABLE(Passwd,wxFrame)
     EVT_BUTTON(ID_B_RG, Passwd::_r_g)
@@ -57,6 +59,10 @@ void Passwd::_r_g(wxCommandEvent& evt)
         wxMessageBox("!!!  Password doesn't match   !!!");
         return;
     }
+
+    mainFrame* uhh = new mainFrame("fuk me", wxDefaultPosition, wxDefaultSize);
+    this->Show(false);
+    uhh->Show();
     Destroy();
 }
 
@@ -65,11 +71,12 @@ void Passwd::canc__(wxCommandEvent& evt)
     Destroy();
 }
 
+// will never do it...
 void Passwd::_f_pwd(wxCommandEvent& evt)
 {
 }
 
 Passwd::~Passwd()
 {
-    wxMessageBox("またねー！", "バイバイ！");
+    // idk do whatever
 }

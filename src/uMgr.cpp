@@ -45,6 +45,7 @@ bool uMgr::OnInit() {
     bool hasPwd = false;
 
     if (!std::filesystem::exists((GV::consts::c_app_data + GV::consts::fsep + "initialised.baka"))) {
+        hasPwd = true; // uhh... can be used here also
         wxFileName exepaf(wxStandardPaths::Get().GetExecutablePath());
         FirstSetup* f = new FirstSetup("Setup", exepaf.GetPath());
         f->Centre(wxBOTH);
@@ -75,8 +76,8 @@ bool uMgr::OnInit() {
     }
     if (!hasPwd)
     {
-        wxMessageBox("debug --- mainframe");
-        return false;
+        mainFrame* fuuuu = new mainFrame("Fooooook", wxDefaultPosition, wxDefaultSize);
+        fuuuu->Show();
     }
 
     return true;
