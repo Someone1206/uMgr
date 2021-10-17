@@ -384,8 +384,6 @@ void writeFile(std::string paf, std::string& data, int option, std::string name)
     using f_I = std::ifstream;
     using f_O = std::ofstream;
 
-    std::string genre = paf.substr(GV::consts::user_data_folder.length() + 1);
-    genre = genre.substr(0, genre.find(GV::consts::fsep));
 
     if ((option & Create) == Create)
     {
@@ -397,31 +395,41 @@ void writeFile(std::string paf, std::string& data, int option, std::string name)
                 wxMessageBox("No name provided!", "きみはこんきれいってるか？", wxICON_ERROR | wxOK);
                 return;
             }
-            file << name << '\n' << (char)1 << '\n';
+            //file << name << '\n' << (char)1 << '\n';
         }
     }
     if ((option & NQuit) == NQuit)
         return;
     if ((option & Add) == Add) {
+
+        f_I fileR(paf);
+
+        std::string tempFilePaf = paf + ".temp";
+
+        f_O fileW(tempFilePaf);
+
+        std::string genre = paf.substr(GV::consts::user_data_folder.length() + 1);
+        genre = genre.substr(0, genre.find(GV::consts::fsep));
+
+        genre = genre + "\n" + name;
+
         std::thread wAllLog(writeToal, ref(data), ref(genre));
         std::thread wll(writeToll, ref(data), ref(genre));
 
-        f_I fileR(paf);
-        if (!fileR.is_open()) {
-            wxMessageBox("Damn! Can't open a file, I am useless ditch me.", "😥😥😥😥😥", wxICON_ERROR | wxOK);
-            return;
-        }
 
-        std::string tempFilePaf = paf + ".temp", name = "";
-
-        f_O fileW(tempFilePaf);
+        // write actual data to temp file...
+        fileW << name << "\n";
         getline(fileR, name);
+        fileW << data;
+
         // write to temp file
         {
             std::string temp = "";
             while (getline(fileR, temp))
                 fileW << temp << '\n';
+            fileW << (char)1 << '\n';
         }
+
         fileR.close();
         fileW.close();
 

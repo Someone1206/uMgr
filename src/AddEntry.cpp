@@ -32,7 +32,7 @@ AddEntry::AddEntry(wxWindow* parent, const wxString& title, const wxPoint& pos, 
 
     // all crap buttons
     wxButton* btn_ok = new wxButton(__p_pane, ID_ADD, "Okay Add");
-    wxButton* btn_okN_en = new wxButton(__p_pane, ID_ADDE_N_L, "Add Genre & Entry");
+    wxButton* btn_okN_en = new wxButton(__p_pane, ID_ADDE_N_L, "Add Entry & Log");
     wxButton* btn_cancel = new wxButton(__p_pane, ID_CANCEL, "Cancel");
 
     // sizer for buttons
@@ -55,27 +55,32 @@ AddEntry::AddEntry(wxWindow* parent, const wxString& title, const wxPoint& pos, 
 void AddEntry::addEntry(wxCommandEvent& evt)
 {
     if (createEntry(entry_name->GetValue(), gen_name)) {
-        this->GetParent()->Destroy();
+        this->Destroy();
         Destroy();
     }
 }
 
 void AddEntry::addEntry_n_log(wxCommandEvent& evt)
 {
+    std::string format = "";
+    {
+        std::ifstream formatF((GV::consts::user_data_folder + FSEP + std::string(gen_name.mb_str()) + FSEP + "format.hentai"));
+        getline(formatF, format);
+    }
     if (createEntry(entry_name->GetValue(), gen_name)) {
         ReadOptions option;
-        if (gen_name == "Anime" || gen_name == "Hentai")
+        if (format == "Anime" || format == "Hentai")
             option = Anime;
-        else if (gen_name == "Manga")
+        else if (format == "Manga")
             option = Manga;
-        else if (gen_name == "Movies")
+        else if (format == "Movies")
             option = Movies;
         else
             option = Others;
         AddLog* addLog = new AddLog(this, ("Add log for " + entry_name->GetValue() + " in genre " + gen_name),
             option, entry_name->GetValue(), wxPoint(this->GetPosition().x + 20, this->GetPosition().y + 20), 
             wxDefaultSize, 
-            (GV::consts::user_data_folder + GV::consts::fsep + gen_name + GV::consts::fsep + entry_name->GetValue() + ".baka"));
+            (GV::consts::user_data_folder + FSEP + gen_name + FSEP + entry_name->GetValue() + ".baka"));
         addLog->Show();
     }
 }

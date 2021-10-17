@@ -5,7 +5,7 @@ class AddEntry
 	: public wxFrame
 {
 public:
-    AddEntry(wxWindow* parent, const wxString& title, const wxPoint& pos, const wxString& genre, bool _idk = true);
+    AddEntry(wxWindow* parent, const wxString& title, const wxPoint& pos, const wxString& genre, bool _idk = false);
 
 private:
     wxTextCtrl* entry_name = nullptr;

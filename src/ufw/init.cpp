@@ -104,7 +104,7 @@ bool createEntry(const wxString& entryName, const wxString& genName)
         return false;
     }
 
-    std::ofstream file(paf);
-    file.close();
+    std::string idk = "";
+    writeFile(paf, idk, Create, entry_name);
     return true;
 }
