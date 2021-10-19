@@ -319,95 +319,92 @@ bool readTrackerFile(std::ifstream& file, bool* choices) {
     return true;
 }
 
+/// <summary>
+/// Actual fn to write data to file
+/// No more ideas for a new name (actually lazy)
+/// </summary>
+/// <param name="paf"> The path for the file</param>
+/// <param name="data"> The data to fill in</param>
+/// <param name="xtra"> The xtra data to fill in like genre+name / name / etc.</param>
+/// <param name="isLog"> Is the file a log file?, def: no</param>
+void write_file(std::string& paf, std::string& data, std::string& xtra, bool isLog = false)
+{
+    std::ifstream fileIN(paf);
+    std::string tempFilePaf = paf + ".tmp";
+    std::ofstream fileOUT(tempFilePaf);
 
-void writeToal(std::string& data, std::string& genre) {
-    using f_I = std::ifstream;
-    using f_O = std::ofstream;
+    if (isLog)
+        fileOUT << (char)1 << '\n';
 
-    std::string paf = GV::consts::user_data_folder + GV::consts::fsep + "AllLogs.hentai";
-    // write to user's data folder
+    fileOUT << xtra << '\n';
+    fileOUT << data << '\n' << (char)1 << '\n';
 
-    f_I fileR(paf);
-    if (!fileR.is_open()) {
-        wxMessageBox("くそが! Can't open AllLogs.hentai ditch me", ("Can't open file: "  + paf), wxICON_ERROR | wxOK);
-        return;
-    }
-    std::string tempFilePaf = paf + ".temp";
-    f_O fileW(tempFilePaf);
-    fileW << (char)1 << '\n' << genre << '\n' << data << '\n' << (char)1;
+    if (!isLog)
     {
-        std::string temp = "";
-        while (getline(fileR, temp))
-            fileW << temp << "\n";
+        std::string idk = "";
+        getline(fileIN, idk);
     }
-    fileR.close();
-    fileW.close();
-    fs::remove(paf);
+
+    {
+        std::string tmp = "";
+        while (getline(fileIN, tmp))
+            fileOUT << tmp << '\n';
+    }
+
+    fileIN.close();
+    fileOUT.close();
+
+    fs::remove_all(paf);
     fs::rename(tempFilePaf, paf);
 }
 
-void writeToll(std::string& data, std::string& genre) {
-    using f_I = std::ifstream;
-    using f_O = std::ofstream;
-
-    std::string paf = GV::consts::user_data_folder + GV::consts::fsep + "LastLogs.baka";
-    // write to users data folder
-
-    f_I fileR(paf);
-    if (!fileR.is_open()) {
-        wxMessageBox("くそが! Can't open AllLogs.hentai ditch me", ("Can't open file: " + paf), wxICON_ERROR | wxOK);
-        return;
-    }
-    std::string tempFilePaf = paf + ".temp";
-
-    f_O fileW(tempFilePaf);
-
-    fileW << (char)1 << '\n' << genre << '\n' << data << '\n' << (char)1;
-
-    // write to temp file
+void writeToal(std::string& data, std::string& genre) {
+    std::string paf = GV::consts::user_data_folder + FSEP + "AllLogs.hentai";
+    // write to user's data folder
     {
-        std::string temp = "";
-        while (getline(fileR, temp))
-            fileW << temp << '\n';
+        std::ifstream fileR(paf);
+        if (!fileR.is_open()) {
+            wxMessageBox("くそが! Can't open AllLogs.hentai ditch me", ("Can't open file: " + paf), wxICON_ERROR | wxOK);
+            return;
+        }
+    }
+    
+    write_file(paf, data, genre, true);
+}
+
+void writeToll(std::string& data, std::string& genre) {
+    std::string paf = GV::consts::user_data_folder + FSEP + "LastLogs.baka";
+    // write to users data folder
+    {
+        std::ifstream fileR(paf);
+        if (!fileR.is_open()) {
+            wxMessageBox("くそが! Can't open AllLogs.hentai ditch me", ("Can't open file: " + paf), wxICON_ERROR | wxOK);
+            return;
+        }
     }
 
-    fileR.close();
-    fileW.close();
-    
-    fs::remove(paf);
-    fs::rename(tempFilePaf, paf);
+    write_file(paf, data, genre, true);
+
 }
 
 
 // a really inefficient way of writing to the starting of file
 void writeFile(std::string paf, std::string& data, int option, std::string name) {
-    using f_I = std::ifstream;
-    using f_O = std::ofstream;
-
-
     if ((option & Create) == Create)
     {
         if (!fs::exists(paf))
         {
-            f_O file(paf);
+            std::ofstream file(paf);
             if (isspace(name))
             {
                 wxMessageBox("No name provided!", "きみはこんきれいってるか？", wxICON_ERROR | wxOK);
                 return;
             }
-            //file << name << '\n' << (char)1 << '\n';
         }
     }
     if ((option & NQuit) == NQuit)
         return;
     if ((option & Add) == Add) {
-
-        f_I fileR(paf);
-
-        std::string tempFilePaf = paf + ".temp";
-
-        f_O fileW(tempFilePaf);
-
         std::string genre = paf.substr(GV::consts::user_data_folder.length() + 1);
         genre = genre.substr(0, genre.find(GV::consts::fsep));
 
@@ -416,25 +413,7 @@ void writeFile(std::string paf, std::string& data, int option, std::string name)
         std::thread wAllLog(writeToal, ref(data), ref(genre));
         std::thread wll(writeToll, ref(data), ref(genre));
 
-
-        // write actual data to temp file...
-        fileW << name << "\n";
-        getline(fileR, name);
-        fileW << data;
-
-        // write to temp file
-        {
-            std::string temp = "";
-            while (getline(fileR, temp))
-                fileW << temp << '\n';
-            fileW << (char)1 << '\n';
-        }
-
-        fileR.close();
-        fileW.close();
-
-        fs::remove(paf);
-        fs::rename(tempFilePaf, paf);
+        write_file(paf, data, name);
 
         wll.join();
         wAllLog.join();
