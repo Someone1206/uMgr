@@ -97,13 +97,13 @@
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir)extDependencies\include\;$(SolutionDir)extDependencies\include\msvc\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)extDependencies\lib\vc_lib\</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>MSVCRTD.lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -115,7 +115,7 @@
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir)extDependencies\include\;$(SolutionDir)extDependencies\include\msvc\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
     </ClCompile>
     <Link>
@@ -123,7 +123,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)extDependencies\lib\vc_lib\</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>MSVCRTD.lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -139,7 +139,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)extDependencies\lib\vc_lib\</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>MSVCRTD.lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -159,37 +159,14 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)extDependencies\lib\vc_lib\</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>MSVCRTD.lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\FirstSetup.cpp" />
-    <ClCompile Include="src\Passwd.cpp" />
-    <ClCompile Include="src\AddEntry.cpp" />
-    <ClCompile Include="src\AddGen.cpp" />
-    <ClCompile Include="src\NumCtrl.cpp" />
-    <ClCompile Include="src\AddLog.cpp" />
-    <ClCompile Include="src\SetMgr.cpp" />
-    <ClCompile Include="src\About.cpp" />
-    <ClCompile Include="src\mainFrame.cpp" />
-    <ClCompile Include="src\ufw\fileIO.cpp" />
-    <ClCompile Include="src\ufw\GV.cpp" />
-    <ClCompile Include="src\ufw\init.cpp" />
     <ClCompile Include="src\uMgr.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\ufw\GV.h" />
-    <ClInclude Include="src\FirstSetup.h" />
-    <ClInclude Include="src\Passwd.h" />
-    <ClInclude Include="src\AddEntry.h" />
-    <ClInclude Include="src\AddGen.h" />
-    <ClInclude Include="src\NumCtrl.h" />
-    <ClInclude Include="src\AddLog.h" />
-    <ClInclude Include="src\SetMgr.h" />
-    <ClInclude Include="src\About.h" />
-    <ClInclude Include="src\mainFrame.h" />
-    <ClInclude Include="src\ufw\fileIO.h" />
-    <ClInclude Include="src\ufw\init.h" />
+    <ClInclude Include="src\bits\Point.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
