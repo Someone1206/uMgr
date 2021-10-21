@@ -1,5 +1,6 @@
-#include "bits/Point.h"
-#include <Windows.h>
+#include "Window.h"
+
+LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 int CALLBACK WinMain(
 	HINSTANCE hInst,
@@ -7,5 +8,31 @@ int CALLBACK WinMain(
 	LPSTR     nCmdLine,
 	int       nCmdShow)
 {
-	return 90;
+	LPCSTR className = "main window";
+	
+	Window win(100, 100, "Fooooook");
+	win.Show();
+
+	MSG msg;
+
+	while (GetMessage(&msg, nullptr, 0, 0) > 0)
+	{
+		TranslateMessage(&msg);
+		DispatchMessage(&msg);
+	}
+	
+	return 0;
+}
+
+LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
+{
+	switch (msg)
+	{
+	case WM_DESTROY:
+		PostQuitMessage(0);
+		break;
+	default:
+		break;
+	}
+	return DefWindowProc(hwnd, msg, wParam, lParam);
 }
