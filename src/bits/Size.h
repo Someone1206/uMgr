@@ -5,38 +5,25 @@ class Size
 {
 public:
 	int x = 0, y = 0;
-	Size(int _x = CW_USEDEFAULT, int _y = CW_USEDEFAULT);
+	Size(int _x = CW_USEDEFAULT, int _y = CW_USEDEFAULT)
+		:x(_x), y(_y)
+	{ /* :> */ }
 
-	Size operator+(const Size& size);
-	Size operator-(const Size& size);
+	Size operator+(const Size& size) {
+		Size res;
+		res.x = x + size.x;
+		res.y = y + size.y;
+		return res;
+	}
+	Size operator-(const Size& size) {
+		Size res;
+		res.x = x - size.x;
+		res.y = y - size.y;
+		return res;
+	}
 
-	~Size();
+	~Size() {
+		// read manga...
+	}
 };
-
-inline Size::Size(int _x, int _y)
-{
-	x = _x;
-	x = _y;
-}
-
-inline Size Size::operator+(const Size& size)
-{
-	Size res;
-	res.x = x + size.x;
-	res.y = y + size.y;
-	return res;
-}
-
-inline Size Size::operator-(const Size& size)
-{
-	Size res;
-	res.x = x - size.x;
-	res.y = y - size.y;
-	return res;
-}
-
-inline Size::~Size()
-{
-	// read some manga.
-}
 

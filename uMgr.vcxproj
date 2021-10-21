@@ -163,9 +163,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\BaseWin.cpp" />
     <ClCompile Include="src\uMgr.cpp" />
     <ClCompile Include="src\Window.cpp" />
+    <ClCompile Include="src\testWindow.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\BaseWin.h" />
@@ -173,6 +173,7 @@
     <ClInclude Include="src\bits\Point.h" />
     <ClInclude Include="src\bits\Size.h" />
     <ClInclude Include="src\Window.h" />
+    <ClInclude Include="src\testWindow.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
