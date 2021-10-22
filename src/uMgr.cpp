@@ -1,5 +1,5 @@
+//#include "Window.h"
 #include "Window.h"
-#include "testWindow.h"
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
@@ -21,8 +21,11 @@ int CALLBACK WinMain(
 {
 	LPCSTR className = "main window";
 	
-	testWindow t(nullptr, nullptr, "lll", Point(), Size());
+	Window t(nullptr, nullptr, "lll", Point(), Size());
 	t.Show();
+
+	Window t2(nullptr, nullptr, "lll", Point(), Size());
+	t2.Show();
 
 	MSG msg;
 

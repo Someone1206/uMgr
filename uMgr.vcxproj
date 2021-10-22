@@ -163,9 +163,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="C:\USERS\SANGI\APPDATA\LOCAL\TEMP\TFSTEMP\VCTMP6240_378357.WINDOW.AF68DFB8.CPP" />
     <ClCompile Include="src\uMgr.cpp" />
     <ClCompile Include="src\Window.cpp" />
-    <ClCompile Include="src\testWindow.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\BaseWin.h" />
@@ -173,7 +173,6 @@
     <ClInclude Include="src\bits\Point.h" />
     <ClInclude Include="src\bits\Size.h" />
     <ClInclude Include="src\Window.h" />
-    <ClInclude Include="src\testWindow.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
