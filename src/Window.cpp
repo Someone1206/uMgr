@@ -39,7 +39,8 @@ Window::WndClass::~WndClass()
 
 Window::Window(int width, int height, LPCSTR name) noexcept
 {
-	hwnd = CreateWindow(
+	hwnd = CreateWindowEx(
+		0,
 		WndClass::getName(), name,
 		WS_OVERLAPPEDWINDOW,
 		CW_USEDEFAULT, CW_USEDEFAULT, width, height,
@@ -64,7 +65,6 @@ LRESULT Window::msgThunk(HWND _hwnd, UINT msg, WPARAM wParam, LPARAM lParam) noe
 {
 	Window* const wnd = reinterpret_cast<Window*>(GetWindowLongPtr(_hwnd, GWLP_USERDATA));
 	return wnd->HandleMsg(_hwnd, msg, wParam, lParam);
-	return LRESULT();
 }
 
 LRESULT Window::HandleMsg(HWND _hwnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept
