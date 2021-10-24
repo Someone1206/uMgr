@@ -1,9 +1,9 @@
 #include "Window.h"
 
-Window::Window(HWND parent, void(*_wndProc)(HWND _hwnd, UINT msg, WPARAM wParam, LPARAM lParam),
-	LPCSTR title, const Point& pos, const Size& size,
-	int styles, int retVal)
-	:BaseWin(pos, size), returnValue(retVal), hInst(GetModuleHandle(nullptr))
+Window::Window(HWND _parent, void(*_wndProc)(HWND _hwnd, UINT msg, WPARAM wParam, LPARAM lParam),
+    LPCSTR title, const Point& pos, const Size& size,
+    int styles, int retVal)
+    :BaseWin(pos, size, _parent), returnValue(retVal), hInst(GetModuleHandle(nullptr))
 {
     if (_wndProc == nullptr)
     {

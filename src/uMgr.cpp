@@ -1,17 +1,30 @@
-//#include "Window.h"
 #include "Window.h"
 
-LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
-
-void smeFn(HWND _hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
+class MainWindow
+	:public Window
 {
-	switch (msg)
+public:
+	MainWindow()
+		:Window(nullptr, funtion, "kk", Point(), Size())
 	{
-	case WM_CLOSE:
-		PostQuitMessage(69);
-		break;
 	}
-}
+
+	~MainWindow()
+	{
+	}
+
+private:
+	static void funtion(HWND _hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
+	{
+		switch (msg)
+		{
+		case WM_CLOSE:
+			PostQuitMessage(02);
+			break;
+		}
+	}
+};
+
 
 int CALLBACK WinMain(
 	HINSTANCE hInst,
@@ -20,12 +33,9 @@ int CALLBACK WinMain(
 	int       nCmdShow)
 {
 	LPCSTR className = "main window";
-	
-	Window t(nullptr, nullptr, "lll", Point(), Size());
-	t.Show();
 
-	Window t2(nullptr, nullptr, "lll", Point(), Size());
-	t2.Show();
+	MainWindow* newWindow = new MainWindow();
+	newWindow->Show();
 
 	MSG msg;
 
@@ -34,14 +44,6 @@ int CALLBACK WinMain(
 		TranslateMessage(&msg);
 		DispatchMessage(&msg);
 	}
-	
+
 	return msg.wParam;
-}
-
-
-
-LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
-{
-	smeFn(hwnd, msg, wParam, lParam);
-	return DefWindowProc(hwnd, msg, wParam, lParam);
 }

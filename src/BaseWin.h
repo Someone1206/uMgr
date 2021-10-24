@@ -5,6 +5,7 @@ class BaseWin
 {
 public:
 	HWND hwnd;
+	HWND parent;
 	Point position;
 	Size size;
 
@@ -13,8 +14,8 @@ public:
 
 	BaseWin() {}
 
-	BaseWin(const Point& pos, const Size& _size)
-		:position(pos), size(_size)
+	BaseWin(const Point& pos, const Size& _size, HWND _parent)
+		:position(pos), size(_size), parent(_parent)
 	{ /* heh */ }
 
 	void Show(bool _show = true) {
