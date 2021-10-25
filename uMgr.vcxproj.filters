@@ -24,6 +24,9 @@
     <ClCompile Include="C:\USERS\SANGI\APPDATA\LOCAL\TEMP\TFSTEMP\VCTMP6240_378357.WINDOW.AF68DFB8.CPP">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Button.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\bits\Point.h">
@@ -39,6 +42,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Window.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Button.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

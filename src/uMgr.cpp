@@ -1,4 +1,5 @@
 #include "Window.h"
+#include "Button.h"
 
 class MainWindow
 	:public Window
@@ -7,6 +8,7 @@ public:
 	MainWindow()
 		:Window(nullptr, funtion, "kk", Point(), Size())
 	{
+		Button* btn = new Button(this->hwnd, 1, "Just do it", Point(), Size(500, 100));
 	}
 
 	~MainWindow()
@@ -21,6 +23,12 @@ private:
 		case WM_CLOSE:
 			PostQuitMessage(02);
 			break;
+		case WM_COMMAND:
+			if (LOWORD(wParam) == 1)
+			{
+				MessageBox(_hwnd, "Thanks for killing me!", "Thanks", MB_OKCANCEL | MB_USERICON);
+				PostQuitMessage(69);
+			}
 		}
 	}
 };
