@@ -5,6 +5,7 @@ class Window :
 {
 public:
     int returnValue;
+    bool enablePar = false, disable_par = false;
 private:
     static constexpr LPCSTR className = "The best window in the entire world";
     HINSTANCE hInst;
@@ -13,7 +14,7 @@ private:
 public:
     Window(HWND parent, void(*_wndProc)(HWND _hwnd, UINT msg, WPARAM wParam, LPARAM lParam),
         LPCSTR title, const Point& pos, const Size& size,
-        int styles = WS_OVERLAPPEDWINDOW, int retVal = 69
+        int styles = WS_OVERLAPPEDWINDOW, int retVal = 69, bool _disable_par = false
     );
 
 private:

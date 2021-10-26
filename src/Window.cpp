@@ -2,8 +2,9 @@
 
 Window::Window(HWND _parent, void(*_wndProc)(HWND _hwnd, UINT msg, WPARAM wParam, LPARAM lParam),
     LPCSTR title, const Point& pos, const Size& size,
-    int styles, int retVal)
-    :BaseWin(pos, size, _parent), returnValue(retVal), hInst(GetModuleHandle(nullptr))
+    int styles, int retVal, bool _disable_par)
+    :BaseWin(pos, size, _parent), returnValue(retVal), hInst(GetModuleHandle(nullptr)), 
+    disable_par(_disable_par)
 {
     if (_wndProc == nullptr)
     {
@@ -41,6 +42,9 @@ Window::Window(HWND _parent, void(*_wndProc)(HWND _hwnd, UINT msg, WPARAM wParam
     }
     else
         wndProc = _wndProc;
+
+    if (_parent != nullptr)
+        enablePar = true;
 
     WNDCLASSEX wc = { 0 };
     wc.cbSize = sizeof(wc);
@@ -88,7 +92,11 @@ LRESULT Window::msgThunk(HWND _hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 
 LRESULT Window::windowProc(HWND _hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
+    if (disable_par && msg == WM_CREATE)
+        EnablePar(false);
     wndProc(_hwnd, msg, wParam, lParam);
+    if (enablePar && msg == WM_CLOSE)
+        EnablePar(); // I prefer it this way
     return DefWindowProc(_hwnd, msg, wParam, lParam);
 }
 
