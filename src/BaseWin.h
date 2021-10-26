@@ -27,6 +27,11 @@ public:
 	void Enable(bool _enable = true) {
 		EnableWindow(hwnd, _enable);
 	}
+
+	void EnablePar(bool _enable = true) {
+		EnableWindow(parent, _enable);
+	}
+
 	void Destroy() {
 		DestroyWindow(hwnd);
 	}
