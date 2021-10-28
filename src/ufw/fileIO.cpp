@@ -1,20 +1,21 @@
+#include <wx/wx.h>
 #include "fileIO.h"
-#include <thread>
-#include <sstream>
 
-bool isspace(std::string& string1)
+inline void reportErr(std::string msg = "Error", std::string title = "Error", int styles = wxOK | wxICON_ERROR)
 {
-    const char* c = string1.c_str();
-    int count = 0;
-    for (int i = 0; i < string1.length(); ++i) {
-        if (isspace(*c++)) {
-            count++;
-        }
+    wxMessageBox(msg, title, styles);
+}
+
+inline bool isspace(std::string string1)
+{
+    unsigned int len = string1.length();
+    for (unsigned int i = 0; i < len; ++i)
+    {
+        char c = string1.at(i);
+        if (!(isspace(c) || c == '　'))
+            return false;
     }
-    c = nullptr;
-    if (count == string1.length())
-        return true;
-    return false;
+    return true;
 }
 
 /* ******************************************************************************
@@ -31,7 +32,7 @@ bool isspace(std::string& string1)
  * <time>
  * <details> ...optional
  *
- * <!-- Anime:  distinguished by file names-->
+ * <!-- Anime -->
  * <name>
  * (char)1
  * <date>
@@ -41,7 +42,7 @@ bool isspace(std::string& string1)
  * <details> ...optional
  * (char)1
  *
- * <!-- Manga:  distinguished by file names-->
+ * <!-- Manga -->
  * <name>
  * (char)1
  * <date>
@@ -51,7 +52,7 @@ bool isspace(std::string& string1)
  * <details> ...optional
  * (char)1
  *
- * <!-- Movies:  distinguished by file names-->
+ * <!-- Movies -->
  * <name>
  * (char)1
  * <date>
@@ -61,10 +62,30 @@ bool isspace(std::string& string1)
  * (char)1
  *
  *
- * <!-- Tracker File Formats -->
+ * <!-- Tracker File Formats --!>
+ * M --> the second part(folder name/file name with baka ext.) is changeable,
+ *       it can hold the relative path(preferred and default) or you can change them,
+ *       to meet your needs {
+ *       [(char)1 to be replaced with the character with value ASCII value 1]
+ *          {1} like the relative path to any other genre/entry with baka ext.
+ *             Eg: Date A Live(char)1..\..\personal logs\Date A Live.baka
+ *             Eg: |Rosario + Vampire|(char)1..\..\Manga\_Rosario + Vampire_.baka
+ *              --> \ / : | * "" < > are not allowed as per Windows 10, it also specifies ?
+ *               but I've seen filenames with ?
+ *             Eg: <変態>(char)1..\..\..\protected folder\hentai
+ *          {2} like the absolute path
+ *             Eg: Ero-Anime(char)1/home/someone/protected/super_protected/no_one_but_me/Hentai
+ *             Eg: エロアニメ(char)1D:\private\protected\justMe\super protected\エロアニメ
+ *       }
+ * -----------------------------------------------
+ * <!-- GenreIndex.baka - M ->
+ * <-- list of all genres[(char)1]the actual name in the file system -->
+ * -----------------------------------------------
+ * <!-- EntryIndex.baka - M ->
+ * <-- list of all entries[(char)1]the file name -->
  *
  *
- * <!-- Settings.baka (G_Set)-->
+ * <!-- Settings.baka -->
  * <choice>
  *
  *
@@ -99,13 +120,13 @@ bool isspace(std::string& string1)
 int entriesNGenres(std::string genre, bool isEntry)
 {
     int i = 0;
-    for (auto& gen : fs::directory_iterator(genre))
+    for (auto& gen : std::filesystem::directory_iterator(genre))
         if (gen.is_directory() == !isEntry)
             i++;
     return i;
 }
 
-void mt_Field(std::string& data, wxTextCtrl* logDisp)
+void mt_Field(const wxString& data, wxTextCtrl* logDisp)
 {
     if (data == "")
     {
@@ -117,12 +138,12 @@ void mt_Field(std::string& data, wxTextCtrl* logDisp)
     (*logDisp) << data << '\n';
 }
 
-///
-
 void readFile(std::ifstream& file, ReadOptions options, wxTextCtrl* logDisp, int history, bool isLLog, bool clearAtS) {
 
-    if (!file.is_open())
-        int smth = wxMessageBox("Can't Open File!", "", wxOK | wxICON_ERROR);
+    if (!file.is_open()) {
+        reportErr("Can't open file");
+        return;
+    }
 
     if (file.peek() == std::ifstream::traits_type::eof()) {
         std::string str = "";
@@ -137,6 +158,7 @@ void readFile(std::ifstream& file, ReadOptions options, wxTextCtrl* logDisp, int
     if (clearAtS)
         logDisp->Clear();
 
+    /*
     history = (bool)history * history + ((!(bool)history) * -1) + (((bool)history) * 1);
     /*
      * ☝☝this takes avg. of 1000 μs when numbers are between 0 and 50
@@ -150,23 +172,25 @@ void readFile(std::ifstream& file, ReadOptions options, wxTextCtrl* logDisp, int
      * when 0, avg of 2100 μs is needed, therefore, its inefficient.
      *
      * here μ = https://seeklogo.com/images/M/mew-logo-8F891D0488-seeklogo.com.png
-    */
+    * /
     // if history is 0, print all -> -1, else print the number of logs from first and add 1 to it
+    */
     getline(file, line);
     (*logDisp) << "Name:    " << line << "\n";
 
-    while (getline(file, line) && ((bool)history)) {
+    while (getline(file, line) /* && ((bool)history) */) {
         if (line.find((char)1) != std::string::npos)
         {
             if (isLLog)
                 return;
             counter = 0;
-            history--;
+            // history--;
             continue;
         }
         switch (counter) {
         case 0:
             // prl("Date:" << "\t\t" << line << '\n');
+            // Display date
             (*logDisp) << "Date:    " << line << "\n";
             break;
         case 1:
@@ -225,10 +249,14 @@ void readFile(std::ifstream& file, ReadOptions options, wxTextCtrl* logDisp, int
 }
 
 void readTrackerFile(std::ifstream& file, TrackerFileOptions tfo, wxTextCtrl* logDisp, int history,
-    wxString* list, std::string dist, bool fullName, std::string* listFP) {
+    wxString* list, std::string dist, std::string* listFP) {
 
-    if (logDisp != emptyText)
+    if (logDisp != nullptr && tfo == LogList)
         logDisp->Clear();
+    else {
+        reportErr("logDisp is nullptr in readTrackerFile");
+        return;
+    }
 
     std::string line = "";
 
@@ -236,21 +264,23 @@ void readTrackerFile(std::ifstream& file, TrackerFileOptions tfo, wxTextCtrl* lo
     case G_IndexerAndData:
     case E_IndexerAndData:
     {
-        int i = 1;
-        for (auto& gen : fs::directory_iterator(dist))
-            if (gen.is_directory())
-                list[i++] = gen.path().filename().string();
+        std::string line = "";
+        int index = 0, i = 0;
+        while (getline(file, line))
+        {
+            index = line.find_last_of(FSEP);
+            listFP[i] = line.substr(index + 1);
+            list[i++] = line.substr(0, index);
+        }
     }
     break;
     case Entries:
     {
         int i = 0;
-        for (auto& entry : fs::directory_iterator(dist))
+        for (auto& entry : std::filesystem::directory_iterator(dist))
             if (!entry.is_directory()) {
-                if (!fullName) {
-                    std::string temp = entry.path().filename().string();
-                    list[i] = temp.substr(0, temp.length() - 5);
-                }
+                std::string temp = entry.path().filename().string();
+                list[i] = temp.substr(0, temp.length() - 5);
                 listFP[i] = entry.path().string();
                 i++;
             }
@@ -259,7 +289,7 @@ void readTrackerFile(std::ifstream& file, TrackerFileOptions tfo, wxTextCtrl* lo
     case LogList:
     {
         if (!file.is_open()) {
-            int res = wxMessageBox("Can't open log file", "", wxOK | wxICON_ERROR);
+            reportErr("Can't open log file -> Log List -> Read Tracker file");
             return;
         }
         bool isGenN = 0;
@@ -286,145 +316,13 @@ void readTrackerFile(std::ifstream& file, TrackerFileOptions tfo, wxTextCtrl* lo
     break;
     default:
     {
-        int sheesh = wxMessageBox("We've (rather I have) encountered some problems"
+        reportErr("We've (rather I have) encountered some problems"
             " while parsing the source code. "
             "The devs have made some problems. You can"
-            " edit the src yourself, or wait for it to be fixed by the dev or cry (the best option)",
-            "Damn it!", 
-            wxOK | wxICON_ERROR);
+            " edit the src yourself, or wait for it to be fixed by the dev or cry (the best option)"
+            );
     }
     }
-    if (logDisp != emptyText)
-        logDisp->SetInsertionPoint(0);
+    logDisp->SetInsertionPoint(0);
 }
 
-bool readTrackerFile(std::ifstream& file, bool* choices) {
-    std::string validation;
-    char c, i = 0;
-
-    while (getline(file, validation) && i < 2) {
-        c = validation.at(0);
-        if (validation == "")
-            choices[i] = 1;
-        else if ((c >= '0' || c <= '9') && validation.length() == 1) {
-            choices[i] = (bool)(c - '0');
-        }
-        else
-            return false;
-        i++;
-    }
-
-    choices = nullptr;
-
-    return true;
-}
-
-/// <summary>
-/// Actual fn to write data to file
-/// No more ideas for a new name (actually lazy)
-/// </summary>
-/// <param name="paf"> The path for the file</param>
-/// <param name="data"> The data to fill in</param>
-/// <param name="xtra"> The xtra data to fill in like genre+name / name / etc.</param>
-/// <param name="isLog"> Is the file a log file?, def: no</param>
-void write_file(std::string& paf, std::string& data, std::string& xtra, bool isLog = false)
-{
-    std::ifstream fileIN(paf);
-    std::string tempFilePaf = paf + ".tmp";
-    std::ofstream fileOUT(tempFilePaf);
-
-    if (isLog)
-        fileOUT << (char)1 << '\n';
-
-    fileOUT << xtra << '\n';
-    fileOUT << data << '\n' << (char)1 << '\n';
-
-    if (!isLog)
-    {
-        std::string idk = "";
-        getline(fileIN, idk);
-    }
-
-    {
-        std::string tmp = "";
-        while (getline(fileIN, tmp))
-            fileOUT << tmp << '\n';
-    }
-
-    fileIN.close();
-    fileOUT.close();
-
-    fs::remove_all(paf);
-    fs::rename(tempFilePaf, paf);
-}
-
-void writeToal(std::string& data, std::string& genre) {
-    std::string paf = GV::consts::user_data_folder + FSEP + "AllLogs.hentai";
-    // write to user's data folder
-    {
-        std::ifstream fileR(paf);
-        if (!fileR.is_open()) {
-            wxMessageBox("くそが! Can't open AllLogs.hentai ditch me", ("Can't open file: " + paf), wxICON_ERROR | wxOK);
-            return;
-        }
-    }
-    
-    write_file(paf, data, genre, true);
-}
-
-void writeToll(std::string& data, std::string& genre) {
-    std::string paf = GV::consts::user_data_folder + FSEP + "LastLogs.baka";
-    // write to users data folder
-    {
-        std::ifstream fileR(paf);
-        if (!fileR.is_open()) {
-            wxMessageBox("くそが! Can't open AllLogs.hentai ditch me", ("Can't open file: " + paf), wxICON_ERROR | wxOK);
-            return;
-        }
-    }
-
-    write_file(paf, data, genre, true);
-
-}
-
-
-// a really inefficient way of writing to the starting of file
-void writeFile(std::string paf, std::string& data, int option, std::string name) {
-    if ((option & Create) == Create)
-    {
-        if (!fs::exists(paf))
-        {
-            std::ofstream file(paf);
-            if (isspace(name))
-            {
-                wxMessageBox("No name provided!", "きみはこんきれいってるか？", wxICON_ERROR | wxOK);
-                return;
-            }
-        }
-    }
-    if ((option & NQuit) == NQuit)
-        return;
-    if ((option & Add) == Add) {
-        std::string genre = paf.substr(GV::consts::user_data_folder.length() + 1);
-        genre = genre.substr(0, genre.find(GV::consts::fsep));
-
-        genre = genre + "\n" + name;
-
-        std::thread wAllLog(writeToal, ref(data), ref(genre));
-        std::thread wll(writeToll, ref(data), ref(genre));
-
-        write_file(paf, data, name);
-
-        wll.join();
-        wAllLog.join();
-    }
-}
-
-
-// only for settings file
-void writeFile(bool* choices, std::string paf) {
-    std::ofstream file(paf);
-
-    file << choices[0] << '\n';
-    file << choices[1];
-}

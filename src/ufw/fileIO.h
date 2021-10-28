@@ -1,17 +1,10 @@
 #pragma once
 #include <fstream>
-#include <wx/wx.h>
 #include "GV.h"
-
-namespace fs = std::filesystem;
-
-static wxString* emptyWxStrArr{ new wxString[0] };
-static std::ifstream emptyFile;
-static wxTextCtrl* emptyText;
-static std::string* emptyStrArr;
 
 /// <summary>
 /// How to read from log files  
+/// Actually it also affects the way data is formatted in the display
 /// 1. Anime: Read in as if its Anime log (Also includes ero-anime(a.k.a Hentai) cuz its also anime)
 /// 2. Manga: for manga
 /// 3. Movies: for movies
@@ -50,17 +43,17 @@ enum TrackerFileOptions
     // ..., Genre Indexer and data, entry indexer and data
 };
 
-
-// check id the string is empty or not -> is of only spaces or has nothing in it.
-bool isspace(std::string& string1);
-
+// check if the string is empty or not -> is of only spaces or has nothing
+// in it.
+inline bool isspace(std::string& string1);
 
 /*
  * Returns the number of entries and genres.
  * pass the genre selected to get the entries in the genre. Default => uMgrData ([folderN] folder having genres)
  * pass thrue as the 2nd arg if they are entries, cuz y not?
  */
-int entriesNGenres(std::string genre = GV::consts::user_data_folder, bool isEntry = false);
+int entriesNGenres(std::string genre = GV::consts::user_data_folder,
+    bool isEntry = false);
 
 /// <summary>
 /// Read from files
@@ -68,16 +61,37 @@ int entriesNGenres(std::string genre = GV::consts::user_data_folder, bool isEntr
 /// <param name="file"> = The file to read from</param>
 /// <param name="options"> = The read option</param>
 /// <param name="logDisp"> = The log to display it to</param>
-/// <param name="history"> = The no of logs to show, 0 for all</param>
+/// <param name="history"> = The no of logs to show, 0 for all, Its not used now</param>
 /// <param name="isLLog"> = Is the file a log summary file</param>
 /// <param name="clearAtS"> = Clear the display when calling this fn (dosen't work now)</param>
-void readFile(std::ifstream& file, ReadOptions options, wxTextCtrl* logDisp, int history = 0, bool isLLog = 0, bool clearAtS = false);
+void readFile(std::ifstream& file, ReadOptions options,
+    wxTextCtrl* logDisp, int history = 0,
+    bool isLLog = 0, bool clearAtS = false);
 
-// Read from AllLogs.hentai and LastLogs.baka
-void readTrackerFile(std::ifstream& file = emptyFile, TrackerFileOptions tfo = LogList, wxTextCtrl* logDisp = emptyText, int history = 0, wxString* list = emptyWxStrArr, std::string dest = GV::consts::user_data_folder, bool fullName = false, std::string* listFP = emptyStrArr);
+/// <summary>
+/// Read from tracker files like GenreIndex.baka, EntryIndex.baka,
+/// AllLogs.hentai and LastLogs.baka
+/// </summary>
+/// <param name="file"> = The file to read from</param>
+/// <param name="tfo"> = Tracker File Options -> is it Index or Log file</param>
+/// <param name="logDisp"> = The the text ctrl to which it is to be shown</param>
+/// <param name="history"> = The depth to look into the file. The number of logs to read>/param>
+/// <param name="list"> = The list of display names from the index files</param>
+/// <param name="dest"> = The folder to look into. Depricated, don't use</param>
+/// <param name="listFP"> = String array for the full path</param>
+void readTrackerFile(std::ifstream& file, 
+    TrackerFileOptions tfo = LogList, wxTextCtrl* logDisp = nullptr,
+    int history = 0, wxString* list = nullptr, 
+    std::string dest = GV::consts::user_data_folder, 
+    std::string* listFP = nullptr);
 
-// only for settings.baka
-bool readTrackerFile(std::ifstream& file, bool* choices);
+/// <summary>
+/// To read settings from settings file
+/// </summary>
+/// <param name="file"> = Ptr to the file to read, nullptr for default -> Settings.baka in uFolder</param>
+/// <param name="choices"> = Array of choices, bool</param>
+bool readTrackerFile(std::ifstream* file, bool* choices);
+
 
 /// <summary>
 /// Write to log files
@@ -87,6 +101,8 @@ bool readTrackerFile(std::ifstream& file, bool* choices);
 /// <param name="genre"> = The genre of the entry, needed for log summary</param>
 /// <param name="option"> = Create only or add a log</param>
 /// <param name="name"> = The ctual name of the entry</param>
-void writeFile(std::string paf, std::string& data, int option = Create, std::string name = "");
+void writeFile(std::string paf, std::string& data, int option = Create, const std::string name = "");
+
+
 // write to setting file
 void writeFile(bool* choices, std::string paf = (GV::consts::user_data_folder + GV::consts::fsep + "Settings.baka"));

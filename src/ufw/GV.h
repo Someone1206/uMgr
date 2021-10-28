@@ -1,19 +1,20 @@
 #pragma once
 #include <filesystem>
+#include <string>
 
 #if _WIN32
 #include <Shlwapi.h>
 #include <ShlObj.h>
 #else
 #include <unistd.h>
+#include <sys/types.h>
+#include <pwd.h>
 #endif // _WIN32
 
 // a collection of all the global variables to be used
 namespace GV
 {
-    /// <summary>
-    /// return the user folder name and updates the user folder path
-    /// </summary>
+    // return the user folder name and updates the user folder path
     std::string getU_F_name();
 
     namespace consts
@@ -33,5 +34,42 @@ namespace GV
 
 } // namespace GV
 
+std::string GV::getU_F_name()
+{
+#if _WIN32
+    TCHAR userPaf[MAX_PATH];
+    SHGetFolderPath(nullptr, CSIDL_PROFILE, nullptr, 0, userPaf);
+    GV::consts::uPaf = userPaf;
+    // set user path
+    std::string temp = GV::consts::uPaf.string();
+    int index = 0, len = temp.length();
+    for (int i = 0; i < len; i++)
+    {
+        if (temp.at(i) == GV::consts::fsep)
+            index = i;
+    }
+    return temp.substr(index + 1);
+    // get user folder name
+#else
+    const char *homedir;
+    if ((homedir = getenv("HOME")) == NULL) 
+        homedir = getpwuid(getuid())->pw_dir;
+    GV::consts::uPaf = homedir;
+    // set user path
+    std::string temp = GV::consts::uPaf.string();
+    int index = 0, len = temp.length();
+    for (int i = 0; i < len; i++)
+    {
+        if (temp.at(i) == GV::consts::fsep)
+            index = i;
+    }
+    return temp.substr(index + 1);
+    // return user name
+#endif // _WIN32
+}
+
 #define FSEP GV::consts::fsep
 #define folderN "uMgrData"
+#define uFolder GV::consts::user_data_folder
+#define aFolder GV::consts::c_app_data
+#define uPAF GV::consts::uPaf
