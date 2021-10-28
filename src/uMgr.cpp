@@ -9,7 +9,15 @@ class childWin
 public:
 	childWin(HWND _hwnd)
 		:Window(_hwnd, nullptr, "Kill Me", Point(), Size(640, 480), WS_OVERLAPPEDWINDOW, 69, true)
-	{}
+	{
+		HWND t_box = CreateWindowEx(
+				WS_EX_CLIENTEDGE,
+				"ediT", "Fook",
+				WS_CHILD | WS_VISIBLE, 10, 10, 620, 450,
+				hwnd, nullptr, nullptr, nullptr);
+		ShowWindow(t_box, SW_SHOW);
+		UpdateWindow(t_box);
+	}
 };
 
 
