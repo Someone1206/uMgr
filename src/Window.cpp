@@ -1,58 +1,17 @@
 #include "Window.h"
 
-Window::Window(HWND _parent, void(*_wndProc)(HWND _hwnd, UINT msg, WPARAM wParam, LPARAM lParam),
-    LPCSTR title, const Point& pos, const Size& size,
+template<class DERIVED_TYPE>
+Window<DERIVED_TYPE>::Window(HWND _parent, LPCSTR title, const Point& pos, const Size& size,
     int styles, int retVal, bool _disable_par)
-    :BaseWin(pos, size, _parent), returnValue(retVal), hInst(GetModuleHandle(nullptr)), 
-    disable_par(_disable_par)
+    :BaseWin(pos, size, _parent), returnValue(retVal)
 {
-    if (_wndProc == nullptr)
-    {
-        /*
-        * wut it should be:
-        * [this](HWND _hwnd, UINT msg, WPARAM wParam, LPARAM lParam)->void
-        * {
-        *     switch (msg)
-        *     {
-        *     case WM_CLOSE:
-        *         PostQuitMessage(returnValue);
-        *         break;
-        *     }
-        * };
-        *
-        * but gives this error
-        * Severity	Code	Description	Project	File	Line	Suppression State
-        * Error (active)	E0413	no suitable conversion function from
-        * "lambda []void (HWND _hwnd, UINT msg, WPARAM wParam, LPARAM lParam)->void"
-        * to "void (*)(HWND, UINT, WPARAM, LPARAM)" exists	uMgr	D:\Me\Me\ZOthers\uMgr\src\testWindow.cpp	22
-        *
-        * Probably will work on it some day later
-        *
-        */
-        wndProc = [](HWND _hwnd, UINT msg, WPARAM wParam, LPARAM lParam)->void
-        {
-            switch (msg)
-            {
-            case WM_CLOSE:
-                // PostQuitMessage(0);
-                // don't quit the entire application
-                break;
-            }
-        };
-    }
-    else
-        wndProc = _wndProc;
-
-    if (_parent != nullptr)
-        enablePar = true;
-
     WNDCLASSEX wc = { 0 };
     wc.cbSize = sizeof(wc);
     wc.style = CS_OWNDC;
-    wc.lpfnWndProc = msgSetup;
+    wc.lpfnWndProc = DERIVED_TYPE::WindowProc;
     wc.cbClsExtra = 0;
     wc.cbWndExtra = 0;
-    wc.hInstance = hInst;
+    wc.hInstance = GetModuleHandle(nullptr);
     wc.hIcon = nullptr;
     wc.hCursor = LoadCursor(nullptr, IDC_ARROW);
     wc.hbrBackground = nullptr;
@@ -67,41 +26,39 @@ Window::Window(HWND _parent, void(*_wndProc)(HWND _hwnd, UINT msg, WPARAM wParam
         className, title,
         styles,
         pos.x, pos.y, size.x, size.y,
-        parent, nullptr, hInst, this
+        parent, nullptr, GetModuleHandle(nullptr), this
     );
 }
 
-LRESULT Window::msgSetup(HWND _hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
+template<class DERIVED_TYPE>
+Window<DERIVED_TYPE>::~Window()
 {
+    UnregisterClass(className, GetModuleHandle(nullptr));
+    Destroy();
+}
+
+template<class DERIVED_TYPE>
+LRESULT Window<DERIVED_TYPE>::WndProc(HWND _hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
+{
+    DERIVED_TYPE* pThis = NULL;
     if (msg == WM_NCCREATE)
     {
-        const CREATESTRUCTW* const createSt = reinterpret_cast<CREATESTRUCTW*>(lParam);
-        Window* const wnd = static_cast<Window*>(createSt->lpCreateParams);
-        SetWindowLongPtr(_hwnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(wnd));
-        SetWindowLongPtr(_hwnd, GWLP_WNDPROC, reinterpret_cast<LONG_PTR>(&Window::msgThunk));
-        return wnd->windowProc(_hwnd, msg, wParam, lParam);
+        CREATESTRUCT* pCreate = (CREATESTRUCT*)lParam;
+        pThis = (DERIVED_TYPE*)pCreate->lpCreateParams;
+        SetWindowLongPtr(hwnd, GWLP_USERDATA, (LONG_PTR)pThis);
+        pThis->m_hwnd = hwnd;
     }
-    return DefWindowProc(_hwnd, msg, wParam, lParam);
-}
+    else
+    {
+        pThis = (DERIVED_TYPE*)GetWindowLongPtr(hwnd, GWLP_USERDATA);
+    }
+    if (pThis)
+    {
+        return pThis->HandleMessage(msg, wParam, lParam);
+    }
+    else
+    {
+        return DefWindowProc(hwnd, msg, wParam, lParam);
+    }
 
-LRESULT Window::msgThunk(HWND _hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
-{
-    Window* const wnd = reinterpret_cast<Window*>(GetWindowLongPtr(_hwnd, GWLP_USERDATA));
-    return wnd->windowProc(_hwnd, msg, wParam, lParam);
-}
-
-LRESULT Window::windowProc(HWND _hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
-{
-    if (disable_par && msg == WM_CREATE)
-        EnablePar(false);
-    wndProc(_hwnd, msg, wParam, lParam);
-    if (enablePar && msg == WM_CLOSE)
-        EnablePar(); // I prefer it this way
-    return DefWindowProc(_hwnd, msg, wParam, lParam);
-}
-
-Window::~Window()
-{
-    UnregisterClass(className, hInst);
-    Destroy();
 }

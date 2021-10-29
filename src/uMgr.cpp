@@ -1,28 +1,29 @@
 #include "Window.h"
 #include "Button.h"
 
-
-
+#define normWinStyle WS_CAPTION | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_SYSMENU
+#define cmmt //
+/*
 class childWin
 	:public Window
 {
 public:
 	childWin(HWND _hwnd)
-		:Window(_hwnd, nullptr, "Kill Me", Point(), Size(640, 480), WS_OVERLAPPEDWINDOW, 69, true)
+		:Window(_hwnd, nullptr, "Kill Me", Point(), Size(640, 480), normWinStyle, 69, true)
 	{
 		HWND t_box = CreateWindowEx(
 				WS_EX_CLIENTEDGE,
 				"ediT", "Fook",
 				WS_CHILD | WS_VISIBLE, 10, 10, 620, 450,
 				hwnd, nullptr, nullptr, nullptr);
-		ShowWindow(t_box, SW_SHOW);
+		cmmt ShowWindow(t_box, SW_SHOW);
 		UpdateWindow(t_box);
 	}
 };
-
+*/
 
 class MainWindow
-	:public Window
+	:public Window<MainWindow>
 {
 	// ik its default, but it looks better
 private:
@@ -38,9 +39,10 @@ private:
 	};
 public:
 	MainWindow()
-		:Window(nullptr, funtion, "Useless Manger", Point(), Size(640, 480))
+		:Window(nullptr, "Useless Manger", Point(), Size(640, 480), normWinStyle)
 	{
 		Button* btn = new Button(this->hwnd, BTN_KILL, "Kill Me", Point(), Size(300, 100));
+		UpdateWindow(btn->hwnd);
 		Button btn1(this->hwnd, BTN_NEWwIN, "New Window", Point(310, 0), Size(280, 100));
 
 		menuBar = CreateMenu();
@@ -53,7 +55,6 @@ public:
 #endif
 
 		AppendMenu(menuIt, MF_ENABLED, M_ADD_LOG, "Add Log");
-
 		AppendMenu(menuBar, MF_POPUP, (UINT_PTR)menuIt, "Add");
 		AppendMenu(menuBar, MF_ENABLED | MF_STRING, M_QUIT, "Quit");
 
@@ -65,37 +66,30 @@ public:
 	}
 
 private:
-	static void funtion(HWND _hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
+	LRESULT HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 	{
-		switch (msg)
+		switch (uMsg)
 		{
-		case WM_CLOSE:
-			PostQuitMessage(0x45);
+		case WM_DESTROY:
+			PostQuitMessage(0);
 			break;
+		case WM_PAINT:
+		{
+			PAINTSTRUCT ps;
+			HDC hdc = BeginPaint(hwnd, &ps);
+			FillRect(hdc, &ps.rcPaint, (HBRUSH)(COLOR_WINDOW + 1));
+			EndPaint(hwnd, &ps);
+			break;
+		}
 		case WM_COMMAND:
 			if (LOWORD(wParam) == BTN_KILL)
 			{
-				int choice = MessageBox(_hwnd, "Thanks for killing me!", "Thanks",
-						MB_OKCANCEL | MB_USERICON);
-				if (choice == IDOK)
-					PostQuitMessage(69);
-			}
-			else if (LOWORD(wParam) == BTN_NEWwIN)
-			{
-				childWin* win = new childWin(_hwnd);
-				win->Show();
-			}
-			else if (LOWORD(wParam) == M_ADD_LOG)
-			{
-				MessageBox(_hwnd, "Still in gamma", "not available", MB_OK | MB_ICONEXCLAMATION);
-			}
-			else if (LOWORD(wParam) == M_QUIT)
-			{
-				MessageBox(_hwnd, "Bye",
-						"!!!!", MB_ICONEXCLAMATION | MB_OK);
 				PostQuitMessage(0x45);
+				break;
 			}
 		}
+		
+		return DefWindowProc(hwnd, uMsg, wParam, lParam);
 	}
 };
 
