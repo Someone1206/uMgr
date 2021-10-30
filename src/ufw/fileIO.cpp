@@ -1,4 +1,5 @@
 #include <wx/wx.h>
+#include <thread>
 #include "fileIO.h"
 
 inline void reportErr(std::string msg = "Error", std::string title = "Error", int styles = wxOK | wxICON_ERROR)
@@ -79,10 +80,10 @@ inline bool isspace(std::string string1)
  *       }
  * -----------------------------------------------
  * <!-- GenreIndex.baka - M ->
- * <-- list of all genres[(char)1]the actual name in the file system -->
+ * <-- list of all genres[(char)1]the actual name/path in the file system -->
  * -----------------------------------------------
  * <!-- EntryIndex.baka - M ->
- * <-- list of all entries[(char)1]the file name -->
+ * <-- list of all entries[(char)1]the file path/name -->
  *
  *
  * <!-- Settings.baka -->
@@ -160,7 +161,7 @@ void readFile(std::ifstream& file, ReadOptions options, wxTextCtrl* logDisp, int
 
     /*
     history = (bool)history * history + ((!(bool)history) * -1) + (((bool)history) * 1);
-    /*
+     *
      * ☝☝this takes avg. of 1000 μs when numbers are between 0 and 50
      *
      *
@@ -205,6 +206,8 @@ void readFile(std::ifstream& file, ReadOptions options, wxTextCtrl* logDisp, int
                 mt_Field(line, logDisp);
                 break;
             case Anime:
+            case Hentai:
+            case Ero_Anime:
                 if (counter == 2)
                     (*logDisp) << "Season:    " << line << "\n";
                 else if (counter == 3)
@@ -268,7 +271,7 @@ void readTrackerFile(std::ifstream& file, TrackerFileOptions tfo, wxTextCtrl* lo
         int index = 0, i = 0;
         while (getline(file, line))
         {
-            index = line.find_last_of(FSEP);
+            index = line.find_last_of((char)1);
             listFP[i] = line.substr(index + 1);
             list[i++] = line.substr(0, index);
         }
@@ -300,8 +303,11 @@ void readTrackerFile(std::ifstream& file, TrackerFileOptions tfo, wxTextCtrl* lo
             }
             if (isGenN) {
                 (*logDisp) << line << "\n--------------------\n";
-                if (line.find("Anime") == 0)
+                if ((line.find("Anime") == 0) || 
+                        (line.find("Hentai") == 0) ||
+                        (line.find("Ero-Anime") == 0))
                     readFile(file, Anime, logDisp, 1, 1);
+                // the syntax is same for all three of 'em for now
                 else if (line.find("Manga") == 0)
                     readFile(file, Manga, logDisp, 1, 1);
                 else if (line.find("Movies") == 0)
@@ -325,4 +331,112 @@ void readTrackerFile(std::ifstream& file, TrackerFileOptions tfo, wxTextCtrl* lo
     }
     logDisp->SetInsertionPoint(0);
 }
+void write_file(std::string& paf, std::string& data, std::string& xtra, bool isLog = false)
+{
+    std::ifstream fileIN(paf);
+    std::string tempFilePaf = paf + ".tmp";
+    std::ofstream fileOUT(tempFilePaf);
 
+    if (isLog)
+        fileOUT << (char)1 << '\n';
+
+    fileOUT << xtra << '\n';
+    fileOUT << data << '\n' << (char)1 << '\n';
+
+    if (!isLog)
+    {
+        std::string idk = "";
+        getline(fileIN, idk);
+    }
+
+    {
+        // copy from original to tmp
+        std::string tmp = "", buff = "";
+        while (getline(fileIN, tmp)) {
+            if (buff.size() > (1024 * 5)) { // if the buffer > 5kb
+                fileOUT << buff << '\n';
+                buff = "";
+            }
+            buff += (tmp + '\n');
+        }
+        fileOUT << buff.substr(0, buff.size() - 1); // delete the last \n
+    }
+
+    fileIN.close();
+    fileOUT.close();
+
+    fs::remove_all(paf); // remove original
+    fs::rename(tempFilePaf, paf);
+    // rename tmp to original
+}
+
+void writeToal(std::string& data, std::string& genre) {
+    std::string paf = GV::consts::user_data_folder + FSEP + "AllLogs.hentai";
+    // write to user's data folder
+    {
+        std::ifstream fileR(paf);
+        if (!fileR.is_open()) {
+            wxMessageBox("くそが! Can't open AllLogs.hentai ditch me", ("Can't open file: " + paf), wxICON_ERROR | wxOK);
+            return;
+        }
+    }
+    
+    write_file(paf, data, genre, true);
+}
+
+void writeToll(std::string& data, std::string& genre) {
+    std::string paf = GV::consts::user_data_folder + FSEP + "LastLogs.baka";
+    // write to users data folder
+    {
+        std::ifstream fileR(paf);
+        if (!fileR.is_open()) {
+            wxMessageBox("くそが! Can't open AllLogs.hentai ditch me", ("Can't open file: " + paf), wxICON_ERROR | wxOK);
+            return;
+        }
+    }
+
+    write_file(paf, data, genre, true);
+
+}
+
+
+// a really inefficient way of writing to the starting of file
+void writeFile(std::string paf, std::string& data, int option, std::string name) {
+    if ((option & Create) == Create)
+    {
+        if (!fs::exists(paf))
+        {
+            std::ofstream file(paf);
+            if (isspace(name))
+            {
+                wxMessageBox("No name provided!", "お前はこんきれいってるか？", wxICON_ERROR | wxOK);
+                return;
+            }
+        }
+    }
+    if ((option & NQuit) == NQuit)
+        return;
+    if ((option & Add) == Add) {
+        std::string genre = paf.substr(GV::consts::user_data_folder.length() + 1);
+        genre = genre.substr(0, genre.find(GV::consts::fsep));
+
+        genre = genre + "\n" + name;
+
+        std::thread wAllLog(writeToal, ref(data), ref(genre));
+        std::thread wll(writeToll, ref(data), ref(genre));
+
+        write_file(paf, data, name);
+
+        wll.join();
+        wAllLog.join();
+    }
+}
+
+
+// only for settings file
+void writeFile(bool* choices, std::string paf) {
+    std::ofstream file(paf);
+
+    file << choices[0] << '\n';
+    file << choices[1];
+}
