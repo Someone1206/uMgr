@@ -1,4 +1,3 @@
-#include <wx/wx.h>
 #include <thread>
 #include "fileIO.h"
 
@@ -7,7 +6,7 @@ inline void reportErr(std::string msg = "Error", std::string title = "Error", in
     wxMessageBox(msg, title, styles);
 }
 
-inline bool isspace(std::string string1)
+inline bool isspace(std::string& string1)
 {
     unsigned int len = string1.length();
     for (unsigned int i = 0; i < len; ++i)
@@ -18,6 +17,7 @@ inline bool isspace(std::string string1)
     }
     return true;
 }
+
 
 /* ******************************************************************************
  *
@@ -118,7 +118,8 @@ inline bool isspace(std::string string1)
  */
 
 
-int entriesNGenres(std::string genre, bool isEntry)
+template<typename Type>
+inline int entriesNGenres(Type genre, bool isEntry)
 {
     int i = 0;
     for (auto& gen : std::filesystem::directory_iterator(genre))
@@ -127,28 +128,27 @@ int entriesNGenres(std::string genre, bool isEntry)
     return i;
 }
 
-void mt_Field(const wxString& data, wxTextCtrl* logDisp)
+void mt_field(const wxString& data, wxTextCtrl* const logDisp)
 {
     if (data == "")
     {
         logDisp->SetDefaultStyle(wxTextAttr(wxNullColour, wxColor(200, 200, 255)));
-        (*logDisp) << "<-- Empty -->" << '\n';
+        (*logDisp) << "<--Empty-->\n";
         logDisp->SetDefaultStyle(wxTextAttr(wxNullColour));
         return;
     }
     (*logDisp) << data << '\n';
 }
 
-void readFile(std::ifstream& file, ReadOptions options, wxTextCtrl* logDisp, int history, bool isLLog, bool clearAtS) {
-
-    if (!file.is_open()) {
-        reportErr("Can't open file");
+void readFile(std::ifstream& file, ReadOptions options, wxTextCtrl* logDisp, int history, bool clearAtS)
+{
+    if (!file)
+    {
+        reportErr("Can't open file -> readFile fn");
         return;
     }
-
     if (file.peek() == std::ifstream::traits_type::eof()) {
-        std::string str = "";
-        mt_Field(str, logDisp);
+        mt_field(std::string(""), logDisp);
         return;
     }
 
@@ -179,32 +179,27 @@ void readFile(std::ifstream& file, ReadOptions options, wxTextCtrl* logDisp, int
     getline(file, line);
     (*logDisp) << "Name:    " << line << "\n";
 
-    while (getline(file, line) /* && ((bool)history) */) {
-        if (line.find((char)1) != std::string::npos)
+    while (getline(file, line) && ((bool)history)) {
+        if (line.find(SEP) != std::string::npos)
         {
-            if (isLLog)
-                return;
             counter = 0;
-            // history--;
+            history--;
             continue;
         }
-        switch (counter) {
+        switch (counter)
+        {
         case 0:
-            // prl("Date:" << "\t\t" << line << '\n');
+            // first line after name is date
             // Display date
             (*logDisp) << "Date:    " << line << "\n";
             break;
         case 1:
-            // prl("Time:" << "\t\t" << line);
+            // line after date is time
             (*logDisp) << "Time:    " << line << "\n";
             break;
         default:
-            switch (options) {
-            case Others:
-                if (counter == 2)
-                    (*logDisp) << "Details and Remarks:\n";
-                mt_Field(line, logDisp);
-                break;
+            switch (options)
+            {
             case Anime:
             case Hentai:
             case Ero_Anime:
@@ -215,10 +210,9 @@ void readFile(std::ifstream& file, ReadOptions options, wxTextCtrl* logDisp, int
                 else {
                     if (counter == 4)
                         (*logDisp) << "Details and Remarks:\n";
-                    mt_Field(line, logDisp);
+                    mt_field(line, logDisp);
                 }
                 break;
-
             case Manga:
                 if (counter == 2)
                     (*logDisp) << "Last Chapter read:    " << line << "\n";
@@ -227,18 +221,21 @@ void readFile(std::ifstream& file, ReadOptions options, wxTextCtrl* logDisp, int
                 else {
                     if (counter == 4)
                         (*logDisp) << "Details and Remarks:\n";
-                    mt_Field(line, logDisp);
+                    mt_field(line, logDisp);
                 }
                 break;
-
             case Movies:
                 if (counter == 2 && line != "") // if not empty
                     (*logDisp) << "Part Last seen:    " << line << "\n";
                 else {
                     if (counter == 3)
                         (*logDisp) << "Details and Remarks:" << "\n";
-                    mt_Field(line, logDisp);
+                    mt_field(line, logDisp);
                 }
+            case Others:
+                if (counter == 2)
+                    (*logDisp) << "Details and Remarks:\n";
+                mt_field(line, logDisp);
             }
             hasContent = true;
         }
@@ -251,9 +248,9 @@ void readFile(std::ifstream& file, ReadOptions options, wxTextCtrl* logDisp, int
     logDisp = nullptr;
 }
 
-void readTrackerFile(std::ifstream& file, TrackerFileOptions tfo, wxTextCtrl* logDisp, int history,
-    wxString* list, std::string dist, std::string* listFP) {
-
+void readTrackerFile(std::ifstream& file, TrackerFileOptions tfo, wxTextCtrl* logDisp, int history, 
+    wxString* list, std::string dest, std::string* listFP)
+{
     if (logDisp != nullptr && tfo == LogList)
         logDisp->Clear();
     else {
@@ -280,7 +277,7 @@ void readTrackerFile(std::ifstream& file, TrackerFileOptions tfo, wxTextCtrl* lo
     case Entries:
     {
         int i = 0;
-        for (auto& entry : std::filesystem::directory_iterator(dist))
+        for (auto& entry : std::filesystem::directory_iterator(dest))
             if (!entry.is_directory()) {
                 std::string temp = entry.path().filename().string();
                 list[i] = temp.substr(0, temp.length() - 5);
@@ -297,26 +294,26 @@ void readTrackerFile(std::ifstream& file, TrackerFileOptions tfo, wxTextCtrl* lo
         }
         bool isGenN = 0;
         while (getline(file, line)) {
-            if (line.find((char)1) != std::string::npos) {
+            if (line.find(SEP) != std::string::npos) {
                 isGenN = 1;
                 continue;
             }
             if (isGenN) {
                 (*logDisp) << line << "\n--------------------\n";
-                if ((line.find("Anime") == 0) || 
-                        (line.find("Hentai") == 0) ||
-                        (line.find("Ero-Anime") == 0))
-                    readFile(file, Anime, logDisp, 1, 1);
+                if ((line.find("Anime") == 0) ||
+                    (line.find("Hentai") == 0) ||
+                    (line.find("Ero-Anime") == 0))
+                    readFile(file, Anime, logDisp, 1);
                 // the syntax is same for all three of 'em for now
                 else if (line.find("Manga") == 0)
-                    readFile(file, Manga, logDisp, 1, 1);
+                    readFile(file, Manga, logDisp, 1);
                 else if (line.find("Movies") == 0)
-                    readFile(file, Movies, logDisp, 1, 1);
+                    readFile(file, Movies, logDisp, 1);
                 else
-                    readFile(file, Others, logDisp, 1, 1);
+                    readFile(file, Others, logDisp, 1);
                 (*logDisp) << "====================\n";
             }
-            isGenN *= 0;
+            isGenN = 0;
         }
     }
     break;
@@ -326,22 +323,29 @@ void readTrackerFile(std::ifstream& file, TrackerFileOptions tfo, wxTextCtrl* lo
             " while parsing the source code. "
             "The devs have made some problems. You can"
             " edit the src yourself, or wait for it to be fixed by the dev or cry (the best option)"
-            );
+        );
     }
     }
     logDisp->SetInsertionPoint(0);
 }
-void write_file(std::string& paf, std::string& data, std::string& xtra, bool isLog = false)
+
+bool readTrackerFile(std::ifstream* file, bool* choices)
 {
+    if (file == nullptr || !file->is_open())
+        return false;
+
+}
+
+void write_file(std::string& paf, std::string& data, std::string& xtra, bool isLog = false) {
     std::ifstream fileIN(paf);
     std::string tempFilePaf = paf + ".tmp";
     std::ofstream fileOUT(tempFilePaf);
 
     if (isLog)
-        fileOUT << (char)1 << '\n';
+        fileOUT << SEP << '\n';
 
     fileOUT << xtra << '\n';
-    fileOUT << data << '\n' << (char)1 << '\n';
+    fileOUT << data << '\n' << SEP << '\n';
 
     if (!isLog)
     {
@@ -365,8 +369,8 @@ void write_file(std::string& paf, std::string& data, std::string& xtra, bool isL
     fileIN.close();
     fileOUT.close();
 
-    fs::remove_all(paf); // remove original
-    fs::rename(tempFilePaf, paf);
+    std::filesystem::remove_all(paf); // remove original
+    std::filesystem::rename(tempFilePaf, paf);
     // rename tmp to original
 }
 
@@ -376,11 +380,11 @@ void writeToal(std::string& data, std::string& genre) {
     {
         std::ifstream fileR(paf);
         if (!fileR.is_open()) {
-            wxMessageBox("くそが! Can't open AllLogs.hentai ditch me", ("Can't open file: " + paf), wxICON_ERROR | wxOK);
+            reportErr("くそが! Can't open AllLogs.hentai ditch me", ("Can't open file: " + paf));
             return;
         }
     }
-    
+
     write_file(paf, data, genre, true);
 }
 
@@ -390,18 +394,18 @@ void writeToll(std::string& data, std::string& genre) {
     {
         std::ifstream fileR(paf);
         if (!fileR.is_open()) {
-            wxMessageBox("くそが! Can't open AllLogs.hentai ditch me", ("Can't open file: " + paf), wxICON_ERROR | wxOK);
+            reportErr("くそが! Can't open AllLogs.hentai ditch me", ("Can't open file: " + paf));
             return;
         }
     }
 
     write_file(paf, data, genre, true);
-
 }
 
-
-// a really inefficient way of writing to the starting of file
-void writeFile(std::string paf, std::string& data, int option, std::string name) {
+template<typename Type_paf, typename Type_data>
+void writeFile(Type_paf paf, Type_data data, int option, const std::string name)
+{
+    namespace fs = std::filesystem;
     if ((option & Create) == Create)
     {
         if (!fs::exists(paf))
@@ -409,7 +413,7 @@ void writeFile(std::string paf, std::string& data, int option, std::string name)
             std::ofstream file(paf);
             if (isspace(name))
             {
-                wxMessageBox("No name provided!", "お前はこんきれいってるか？", wxICON_ERROR | wxOK);
+                reportErr("No name provided!", "お前はこんきれいってるか？");
                 return;
             }
         }
@@ -432,11 +436,15 @@ void writeFile(std::string paf, std::string& data, int option, std::string name)
     }
 }
 
-
-// only for settings file
-void writeFile(bool* choices, std::string paf) {
+void writeFile(bool* choices, std::string paf)
+{
     std::ofstream file(paf);
 
     file << choices[0] << '\n';
     file << choices[1];
+}
+
+template<typename Type_paf>
+void indexData(int tfo, Type_paf paf)
+{
 }

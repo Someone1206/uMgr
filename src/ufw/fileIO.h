@@ -1,6 +1,7 @@
 #pragma once
 #include <fstream>
 #include "GV.h"
+#include <wx\wx.h>
 
 /// <summary>
 /// How to read from log files  
@@ -11,7 +12,8 @@
 /// 4. Others: for other genres
 /// </summary>
 enum ReadOptions {
-    Anime, Manga, Movies,
+    Anime, Hentai, Ero_Anime,
+    Manga, Movies,
 
     Others
 };
@@ -49,11 +51,12 @@ inline bool isspace(std::string& string1);
 
 /*
  * Returns the number of entries and genres.
- * pass the genre selected to get the entries in the genre. Default => uMgrData ([folderN] folder having genres)
+ * pass the genre selected to get the entries in the genre
  * pass thrue as the 2nd arg if they are entries, cuz y not?
+ * Pass the type as string& or string&&
  */
-int entriesNGenres(std::string genre = GV::consts::user_data_folder,
-    bool isEntry = false);
+template<typename Type>
+int entriesNGenres(Type genre, bool isEntry = false);
 
 /// <summary>
 /// Read from files
@@ -65,8 +68,7 @@ int entriesNGenres(std::string genre = GV::consts::user_data_folder,
 /// <param name="isLLog"> = Is the file a log summary file</param>
 /// <param name="clearAtS"> = Clear the display when calling this fn (dosen't work now)</param>
 void readFile(std::ifstream& file, ReadOptions options,
-    wxTextCtrl* logDisp, int history = 0,
-    bool isLLog = 0, bool clearAtS = false);
+    wxTextCtrl* logDisp, int history = 0, bool clearAtS = false);
 
 /// <summary>
 /// Read from tracker files like GenreIndex.baka, EntryIndex.baka,
@@ -82,7 +84,7 @@ void readFile(std::ifstream& file, ReadOptions options,
 void readTrackerFile(std::ifstream& file, 
     TrackerFileOptions tfo = LogList, wxTextCtrl* logDisp = nullptr,
     int history = 0, wxString* list = nullptr, 
-    std::string dest = GV::consts::user_data_folder, 
+    std::string dest = uFolder, 
     std::string* listFP = nullptr);
 
 /// <summary>
@@ -101,8 +103,18 @@ bool readTrackerFile(std::ifstream* file, bool* choices);
 /// <param name="genre"> = The genre of the entry, needed for log summary</param>
 /// <param name="option"> = Create only or add a log</param>
 /// <param name="name"> = The ctual name of the entry</param>
-void writeFile(std::string paf, std::string& data, int option = Create, const std::string name = "");
+template<typename Type_paf, typename Type_data>
+void writeFile(Type_paf paf, Type_data data, int option = Create, const std::string name = "");
 
 
 // write to setting file
-void writeFile(bool* choices, std::string paf = (GV::consts::user_data_folder + GV::consts::fsep + "Settings.baka"));
+void writeFile(bool* choices, std::string&& paf = (uFolder + FSEP + "Settings.baka"));
+
+/// <summary>
+/// index genre or entry
+/// </summary>
+/// <typeparam name="Type_paf"> : The path type, either std::string& or std::string&&</typeparam>
+/// <param name="tfo">: Tracker file option, either G_IndexerAndData or E_IndexerAndData or G_IndexerAndData | E_IndexerAndData</param>
+/// <param name="paf">: The path to file</param>
+template<typename Type_paf>
+void indexData(int tfo, Type_paf paf = "");

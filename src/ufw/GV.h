@@ -73,6 +73,7 @@ std::string GV::getU_F_name()
 #define uFolder GV::consts::user_data_folder
 #define aFolder GV::consts::c_app_data
 #define uPAF GV::consts::uPaf
+static constexpr char SEP = (char)1;
 
 #if _WIN32
 // hide the files on creation when Windows
