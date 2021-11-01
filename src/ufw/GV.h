@@ -68,19 +68,25 @@ std::string GV::getU_F_name()
 #endif // _WIN32
 }
 
-#define FSEP GV::consts::fsep
-#define folderN "uMgrData"
-#define uFolder GV::consts::user_data_folder
-#define aFolder GV::consts::c_app_data
-#define uPAF GV::consts::uPaf
+#define FSEP      GV::consts::fsep
+#define folderN   "uMgrData"
+#define uFolder   GV::consts::user_data_folder
+#define aFolder   GV::consts::c_app_data
+#define uPAF      GV::consts::uPaf
+#define SET_NO    2 // number of setting, for array, currently 2
 static constexpr char SEP = (char)1;
 
 #if _WIN32
 // hide the files on creation when Windows
-#define GEN_INDEX_N "GenreIndex.hentai"
-#define ENTRY_INDEX_N "EntryIndex.hentai"
+#define GEN_INDEX_N      "GenreIndex.hentai"
+#define ENTRY_INDEX_N    "EntryIndex.hentai"
 #else
 // making the files hidden if linux detected
-#define GEN_INDEX_N ".GenreIndex.hentai"
-#define ENTRY_INDEX_N ".EntryIndex.hentai"
+#define GEN_INDEX_N      ".GenreIndex.hentai"
+#define ENTRY_INDEX_N    ".EntryIndex.hentai"
 #endif // _WIN32
+
+
+#define RE_CONST   0x01000 // ms does shit like this to their macros
+// destructive creation ||(signs of nerdiness) recreation from scratch (here, in this context)
+#define _CONST     0x01001 // constructive creation
