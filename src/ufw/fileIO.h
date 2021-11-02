@@ -1,7 +1,8 @@
 #pragma once
 #include <fstream>
-#include "GV.h"
 #include <wx\wx.h>
+#include <optional>
+#include "GV.h"
 
 /// <summary>
 /// How to read from log files  
@@ -26,7 +27,9 @@ enum ReadOptions {
  */
 enum WriteOption
 {
-    Create, Add, NQuit
+    Create, Add, NQuit,
+
+    Preferences  // only to be used in 1 fn --> indexData
 };
 
 /*
@@ -65,7 +68,6 @@ int entriesNGenres(Type genre, bool isEntry = false);
 /// <param name="options"> = The read option</param>
 /// <param name="logDisp"> = The log to display it to</param>
 /// <param name="history"> = The no of logs to show, 0 for all, Its not used now</param>
-/// <param name="isLLog"> = Is the file a log summary file</param>
 /// <param name="clearAtS"> = Clear the display when calling this fn (dosen't work now)</param>
 void readFile(std::ifstream& file, ReadOptions options,
     wxTextCtrl* logDisp, int history = 0, bool clearAtS = false);
@@ -92,12 +94,14 @@ void readTrackerFile(std::ifstream& file,
 /// </summary>
 /// <param name="file"> = Ptr to the file to read, nullptr for default -> Settings.baka in uFolder</param>
 /// <param name="choices"> = Array of choices, bool</param>
-bool readTrackerFile(std::ifstream* file, bool* choices);
+std::optional<bool> readTrackerFile(std::ifstream& file, bool (&choices)[SET_NO]);
 
 
 /// <summary>
 /// Write to log files
 /// </summary>
+/// <typeparam name="Type_paf"> : The path type, either std::string& or std::string&&</typeparam>
+/// <typeparam name="Type_data"> : The data type, either std::string& or std::string&&</typeparam>
 /// <param name="paf"> = Path of the Entry.</param>
 /// <param name="data"> = The data to be written, Needs to be pre formatted</param>
 /// <param name="genre"> = The genre of the entry, needed for log summary</param>
@@ -113,8 +117,8 @@ void writeFile(bool* choices, std::string&& paf = (uFolder + FSEP + "Settings.ba
 /// <summary>
 /// index genre or entry
 /// </summary>
-/// <typeparam name="Type_paf"> : The path type, either std::string& or std::string&&</typeparam>
-/// <param name="tfo">: Tracker file option, either G_IndexerAndData or E_IndexerAndData or G_IndexerAndData | E_IndexerAndData</param>
+/// <typeparam name="Type_paf"> : The path type, either std::filesystem::path & or &&</typeparam>
+/// <param name="tfo">: Index option, either G_IndexerAndData, E_IndexerAndData, Preferences, with RE_CONST or _CONST</param>
 /// <param name="paf">: The path to file</param>
 template<typename Type_paf>
-void indexData(int tfo, Type_paf paf = "");
+void indexData(int options, Type_paf paf = "");

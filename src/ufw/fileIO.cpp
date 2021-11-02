@@ -329,11 +329,25 @@ void readTrackerFile(std::ifstream& file, TrackerFileOptions tfo, wxTextCtrl* lo
     logDisp->SetInsertionPoint(0);
 }
 
-bool readTrackerFile(std::ifstream* file, bool* choices)
+bool readTrackerFile(std::ifstream& file, bool (&choices)[SET_NO])
 {
     if (file == nullptr || !file->is_open())
         return false;
+    std::string tmp = "";
+    char ch;
+    bool isValid = false;
+    for (char i = 0; i < SET_NO, getline(file, tmp); ++i) {
+        ch = tmp.at(0);
+        if (tmp.length() == 1 && ch >= '0' && ch <= '9')
+            choices[i] = (bool)(ch - '0');
+        else
+            isValid = true;
+    }
 
+    if (isValid)
+        return {};
+    else
+        return true;
 }
 
 void write_file(std::string& paf, std::string& data, std::string& xtra, bool isLog = false) {
@@ -356,6 +370,10 @@ void write_file(std::string& paf, std::string& data, std::string& xtra, bool isL
     {
         // copy from original to tmp
         std::string tmp = "", buff = "";
+        /*
+         * use getline and strings, tests show string + getline + same code below
+         * complete in half the time taken as that of char* buffer and ofstream.write
+         */
         while (getline(fileIN, tmp)) {
             if (buff.size() > (1024 * 5)) { // if the buffer > 5kb
                 fileOUT << buff << '\n';
@@ -375,7 +393,7 @@ void write_file(std::string& paf, std::string& data, std::string& xtra, bool isL
 }
 
 void writeToal(std::string& data, std::string& genre) {
-    std::string paf = GV::consts::user_data_folder + FSEP + "AllLogs.hentai";
+    std::string paf = uFolder + FSEP + "AllLogs.hentai";
     // write to user's data folder
     {
         std::ifstream fileR(paf);
@@ -389,7 +407,7 @@ void writeToal(std::string& data, std::string& genre) {
 }
 
 void writeToll(std::string& data, std::string& genre) {
-    std::string paf = GV::consts::user_data_folder + FSEP + "LastLogs.baka";
+    std::string paf = uFolder + FSEP + "LastLogs.baka";
     // write to users data folder
     {
         std::ifstream fileR(paf);
@@ -422,7 +440,7 @@ void writeFile(Type_paf paf, Type_data data, int option, const std::string name)
         return;
     if ((option & Add) == Add) {
         std::string genre = paf.substr(GV::consts::user_data_folder.length() + 1);
-        genre = genre.substr(0, genre.find(GV::consts::fsep));
+        genre = genre.substr(0, genre.find(FSEP));
 
         genre = genre + "\n" + name;
 
@@ -445,6 +463,67 @@ void writeFile(bool* choices, std::string paf)
 }
 
 template<typename Type_paf>
-void indexData(int tfo, Type_paf paf)
+void indexData(int options, Type_paf paf)
 {
+    std::string buff = "";
+    if ((options & _DEST) == _DEST)
+    // destructive, destroy the previous record completely and 
+    // recreate the file
+    {
+        std::ofstream fileOUT(paf); // the output file
+        if ((options & G_IndexerAndData) == G_IndexerAndData)
+        {
+            std::string tmp = "";
+            std::ifstream gen_name;     // file for gen_name.hentai
+            paf.remove_filename();
+            for (auto& gen : std::filesystem::directory_iterator(paf))
+            {
+                if (gen.is_directory()) {
+                    gen_name.open((gen + FSEP + "gen_name.hentai"));
+                    getline(gen_name, tmp); // the only line in the file
+                    gen_name.close();
+                    if (buff.size() > (1024 * 5)) {
+                        fileOUT << buff;
+                        buff = "";
+                    }
+                    buff += (tmp + SEP + gen.path().string() + '\n');
+                }
+            }
+            fileOUT << buff.substr(0, buff.length() - 1); // remove the last \n
+            fileOUT.close();
+        }
+        if ((options & E_IndexerAndData) == E_IndexerAndData)
+        {
+            std::string tmp = "";
+            std::ifstream __entry;
+            paf.remove_filename();
+            for (auto& entry : std::filesystem::directory_iterator(paf)) {
+                if (!entry.is_directory() && entry.extension() == ".baka") {
+                    __entry.open(entry);
+                    getline(__entry, tmp); // get the name in the log file (1st line)
+                    __entry.close();
+                    if (buff.size() > (1024 * 5)) {
+                        fileOUT << buff;
+                        buff = "";
+                    }
+                    buff += (tmp + SEP + entry.path().string() + '\n');
+                }
+            }
+            fileOUT << buff.substr(0, buff.length() - 1); // remove the last \n
+            fileOUT.close();
+        }
+        if ((options & Preferences) == Preferences) {
+            for (int i = 0; i < SET_NO; ++i)
+                buff += "0\n";
+            fileOUT << buff.substr(0, buff.length() - 1);
+            fileOUT.close();
+        }
+    }
+    else if ((options & _CONST) == _CONST)
+    // constructive, keep as much as possible of the previous file
+    // then recreate it.
+    {
+        // htf do you do it?
+        // therefore, reserved for later
+    }
 }
