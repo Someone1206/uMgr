@@ -87,6 +87,7 @@ static constexpr char SEP = (char)1;
 #endif // _WIN32
 
 
-#define RE_CONST   0x01000 // ms does shit like this to their macros
+#define RE_DEST   0x01000 // ms does shit like this to their macros
+#define _DEST     0x01000 // this name makes moe sense
 // destructive creation ||(signs of nerdiness) recreation from scratch (here, in this context)
 #define _CONST     0x01001 // constructive creation
