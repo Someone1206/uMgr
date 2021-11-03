@@ -50,7 +50,7 @@ enum TrackerFileOptions
 
 // check if the string is empty or not -> is of only spaces or has nothing
 // in it.
-inline bool isspace(std::string& string1);
+inline bool isspace(const std::string& string1);
 
 /*
  * Returns the number of entries and genres.
@@ -108,7 +108,7 @@ std::optional<bool> readTrackerFile(std::ifstream& file, bool (&choices)[SET_NO]
 /// <param name="option"> = Create only or add a log</param>
 /// <param name="name"> = The ctual name of the entry</param>
 template<typename Type_paf, typename Type_data>
-void writeFile(Type_paf paf, Type_data data, int option = Create, const std::string name = "");
+void writeFile(Type_paf paf, Type_data data, int option = Create, const std::string& name = "");
 
 
 // write to setting file

@@ -6,7 +6,7 @@ inline void reportErr(std::string msg = "Error", std::string title = "Error", in
     wxMessageBox(msg, title, styles);
 }
 
-inline bool isspace(std::string& string1)
+inline bool isspace(const std::string& string1)
 {
     unsigned int len = string1.length();
     for (unsigned int i = 0; i < len; ++i)
@@ -329,9 +329,9 @@ void readTrackerFile(std::ifstream& file, TrackerFileOptions tfo, wxTextCtrl* lo
     logDisp->SetInsertionPoint(0);
 }
 
-bool readTrackerFile(std::ifstream& file, bool (&choices)[SET_NO])
+std::optional<bool> readTrackerFile(std::ifstream& file, bool (&choices)[SET_NO])
 {
-    if (file == nullptr || !file->is_open())
+    if (!file.is_open())
         return false;
     std::string tmp = "";
     char ch;
@@ -421,7 +421,7 @@ void writeToll(std::string& data, std::string& genre) {
 }
 
 template<typename Type_paf, typename Type_data>
-void writeFile(Type_paf paf, Type_data data, int option, const std::string name)
+void writeFile(Type_paf paf, Type_data data, int option, const std::string& name)
 {
     namespace fs = std::filesystem;
     if ((option & Create) == Create)
