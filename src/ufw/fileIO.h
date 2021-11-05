@@ -13,9 +13,10 @@
 /// 4. Others: for other genres
 /// </summary>
 enum ReadOptions {
-    Anime, Hentai, Ero_Anime,
+    Anime, Hentai, Ero_Anime, // for Anime. Last 2 are the same tho... and are interchangeable
+    Series,                   // Added series, for series... Has the same formatting as Anime
     Manga, Movies,
-
+    Diary,                    // Diary format...
     Others
 };
 
@@ -112,7 +113,7 @@ void writeFile(Type_paf paf, Type_data data, int option = Create, const std::str
 
 
 // write to setting file
-void writeFile(bool* choices, std::string&& paf = (uFolder + FSEP + "Settings.baka"));
+void writeFile(bool(&choices)[SET_NO], std::string&& paf = (uFolder + FSEP + "Settings.baka"));
 
 /// <summary>
 /// index genre or entry
