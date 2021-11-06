@@ -33,7 +33,7 @@ inline bool isspace(const std::string& string1)
  * <time>
  * <details> ...optional
  *
- * <!-- Anime -->
+ * <!-- Anime, Hentai, Ero-Anime, Series -->
  * <name>
  * (char)1
  * <date>
@@ -61,6 +61,19 @@ inline bool isspace(const std::string& string1)
  * <part>    ...optional
  * <details> ...optional
  * (char)1
+ *
+ * <!-- Diary -->
+ * <<-- Diary -->>
+ * (char)1
+ * <date>
+ * <time>
+ * <details> ...optional
+ * (char)1
+ * <date>
+ * <time>
+ * <details> ...optional ...
+ *
+ *
  *
  *
  * <!-- Tracker File Formats --!>
@@ -148,7 +161,7 @@ void readFile(std::ifstream& file, ReadOptions options, wxTextCtrl* logDisp, int
         return;
     }
     if (file.peek() == std::ifstream::traits_type::eof()) {
-        mt_field(std::string(""), logDisp);
+        mt_field("", logDisp);
         return;
     }
 
@@ -203,6 +216,7 @@ void readFile(std::ifstream& file, ReadOptions options, wxTextCtrl* logDisp, int
             case Anime:
             case Hentai:
             case Ero_Anime:
+            case Series:
                 if (counter == 2)
                     (*logDisp) << "Season:    " << line << "\n";
                 else if (counter == 3)
@@ -232,6 +246,9 @@ void readFile(std::ifstream& file, ReadOptions options, wxTextCtrl* logDisp, int
                         (*logDisp) << "Details and Remarks:" << "\n";
                     mt_field(line, logDisp);
                 }
+            case Diary:
+                mt_field(line, logDisp);
+                // time and date are already printed + can't write Details and Remarks
             case Others:
                 if (counter == 2)
                     (*logDisp) << "Details and Remarks:\n";
@@ -268,7 +285,7 @@ void readTrackerFile(std::ifstream& file, TrackerFileOptions tfo, wxTextCtrl* lo
         int index = 0, i = 0;
         while (getline(file, line))
         {
-            index = line.find_last_of((char)1);
+            index = line.find_last_of(SEP);
             listFP[i] = line.substr(index + 1);
             list[i++] = line.substr(0, index);
         }
@@ -280,7 +297,7 @@ void readTrackerFile(std::ifstream& file, TrackerFileOptions tfo, wxTextCtrl* lo
         for (auto& entry : std::filesystem::directory_iterator(dest))
             if (!entry.is_directory()) {
                 std::string temp = entry.path().filename().string();
-                list[i] = temp.substr(0, temp.length() - 5);
+                list[i] = temp.substr(0, temp.length() - 4);
                 listFP[i] = entry.path().string();
                 i++;
             }
@@ -302,13 +319,16 @@ void readTrackerFile(std::ifstream& file, TrackerFileOptions tfo, wxTextCtrl* lo
                 (*logDisp) << line << "\n--------------------\n";
                 if ((line.find("Anime") == 0) ||
                     (line.find("Hentai") == 0) ||
-                    (line.find("Ero-Anime") == 0))
+                    (line.find("Ero-Anime") == 0) ||
+                    (line.find("Series") == 0))
                     readFile(file, Anime, logDisp, 1);
-                // the syntax is same for all three of 'em for now
+                // the syntax is same for all four of 'em for now
                 else if (line.find("Manga") == 0)
                     readFile(file, Manga, logDisp, 1);
                 else if (line.find("Movies") == 0)
                     readFile(file, Movies, logDisp, 1);
+                else if (line.find("Diary") == 0)
+                    readFile(file, Diary, logDisp, 1);
                 else
                     readFile(file, Others, logDisp, 1);
                 (*logDisp) << "====================\n";
@@ -375,7 +395,7 @@ void write_file(std::string& paf, std::string& data, std::string& xtra, bool isL
          * complete in half the time taken as that of char* buffer and ofstream.write
          */
         while (getline(fileIN, tmp)) {
-            if (buff.size() > (1024 * 5)) { // if the buffer > 5kb
+            if (buff.size() > (1024 * 70)) { // okay, 70kb I mean, how less can ur mem. be?, this may result in >200kb buffers
                 fileOUT << buff << '\n';
                 buff = "";
             }
@@ -392,6 +412,8 @@ void write_file(std::string& paf, std::string& data, std::string& xtra, bool isL
     // rename tmp to original
 }
 
+
+// write to all logs
 void writeToal(std::string& data, std::string& genre) {
     std::string paf = uFolder + FSEP + "AllLogs.hentai";
     // write to user's data folder
@@ -406,6 +428,8 @@ void writeToal(std::string& data, std::string& genre) {
     write_file(paf, data, genre, true);
 }
 
+
+// write to last logs
 void writeToll(std::string& data, std::string& genre) {
     std::string paf = uFolder + FSEP + "LastLogs.baka";
     // write to users data folder
@@ -454,12 +478,15 @@ void writeFile(Type_paf paf, Type_data data, int option, const std::string& name
     }
 }
 
-void writeFile(bool* choices, std::string paf)
+
+void writeFile(bool(&choices)[SET_NO], std::string&& paf)
 {
     std::ofstream file(paf);
 
-    file << choices[0] << '\n';
-    file << choices[1];
+    for (char i = 0; i < SET_NO; i++)
+    {
+        file << choices[i] << '\n';
+    }
 }
 
 template<typename Type_paf>
