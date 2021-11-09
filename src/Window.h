@@ -1,25 +1,26 @@
-#pragma once
 #include "BaseWin.h"
 
-template <class DERIVED_TYPE>
-class Window :
-    public BaseWin
+template<class D_CLASS>
+class Window
+    :public BaseWin
 {
 public:
     int returnValue;
 private:
-    static constexpr LPCSTR className = "The best window in the entire world";
-    void(*wndProc)(HWND, UINT, WPARAM, LPARAM);
-
+    static constexpr LPCSTR className = "Best Window in the UNIVERSE!";
 public:
-    Window(HWND parent, LPCSTR title, const Point& pos, const Size& size,
-        int styles = WS_OVERLAPPEDWINDOW, int retVal = 69, bool _disable_par = false
+    Window(HWND parent, LPCSTR title, int id, const Point& pos, const Size& _size,
+        int styles = WS_OVERLAPPEDWINDOW, int retVal = 69, int stylesEx = 0
     );
-public:
-    ~Window();
 
-public:
-    static LRESULT CALLBACK WndProc(HWND _hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
-    virtual LRESULT HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam) = 0;
+    static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
+
+    // declare this fn in the inherited class and use as wnd proc
+    virtual LRESULT HandleMessages(UINT msg, WPARAM wParam, LPARAM lParam) = 0;
+
+    ~Window()
+    {
+        UnregisterClass(className, GetModuleHandle(nullptr));
+        Destroy();
+    }
 };
-

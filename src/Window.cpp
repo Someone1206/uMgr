@@ -1,14 +1,15 @@
 #include "Window.h"
 
-template<class DERIVED_TYPE>
-Window<DERIVED_TYPE>::Window(HWND _parent, LPCSTR title, const Point& pos, const Size& size,
-    int styles, int retVal, bool _disable_par)
-    :BaseWin(pos, size, _parent), returnValue(retVal)
+template<class D_CLASS>
+Window<D_CLASS>::Window(HWND parent, LPCSTR title, int id, const Point& pos, const Size& _size,
+    int styles, int retVal, int stylesEx)
+    :BaseWin(parent, pos, _size, id), returnValue(retVal)
 {
     WNDCLASSEX wc = { 0 };
+
     wc.cbSize = sizeof(wc);
     wc.style = CS_OWNDC;
-    wc.lpfnWndProc = DERIVED_TYPE::WindowProc;
+    wc.lpfnWndProc = D_CLASS::WndProc;
     wc.cbClsExtra = 0;
     wc.cbWndExtra = 0;
     wc.hInstance = GetModuleHandle(nullptr);
@@ -21,44 +22,30 @@ Window<DERIVED_TYPE>::Window(HWND _parent, LPCSTR title, const Point& pos, const
 
     RegisterClassEx(&wc);
 
-    hwnd = CreateWindowEx(
-        0,
+    hWnd = CreateWindowEx(
+        stylesEx,
         className, title,
         styles,
-        pos.x, pos.y, size.x, size.y,
-        parent, nullptr, GetModuleHandle(nullptr), this
+        Position.x, Position.y, size.x, size.y,
+        parent, (HMENU)ID, GetModuleHandle(nullptr), this
     );
 }
 
-template<class DERIVED_TYPE>
-Window<DERIVED_TYPE>::~Window()
+template<class D_CLASS>
+LRESULT Window<D_CLASS>::WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
-    UnregisterClass(className, GetModuleHandle(nullptr));
-    Destroy();
-}
-
-template<class DERIVED_TYPE>
-LRESULT Window<DERIVED_TYPE>::WndProc(HWND _hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
-{
-    DERIVED_TYPE* pThis = NULL;
-    if (msg == WM_NCCREATE)
-    {
-        CREATESTRUCT* pCreate = (CREATESTRUCT*)lParam;
-        pThis = (DERIVED_TYPE*)pCreate->lpCreateParams;
-        SetWindowLongPtr(hwnd, GWLP_USERDATA, (LONG_PTR)pThis);
-        pThis->m_hwnd = hwnd;
+    D_CLASS* p_this = nullptr;
+    if (msg == WM_NCCREATE) {
+        CREATESTRUCT* create = (CREATESTRUCT*)lParam;
+        p_this = (D_CLASS*)create->lpCreateParams;
+        SetWindowLongPtr(hWnd, GWLP_USERDATA, (LONG_PTR)p_this);
+        //p_this->hWnd = hwnd;
     }
     else
-    {
-        pThis = (DERIVED_TYPE*)GetWindowLongPtr(hwnd, GWLP_USERDATA);
-    }
-    if (pThis)
-    {
-        return pThis->HandleMessage(msg, wParam, lParam);
-    }
-    else
-    {
-        return DefWindowProc(hwnd, msg, wParam, lParam);
-    }
+        p_this = (D_CLASS*)GetWindowLongPtr(hWnd, GWLP_USERDATA);
 
+    if (p_this)
+        return p_this->HandleMessages(msg, wParam, lParam);
+    else
+        return DefWindowProc(hWnd, msg, wParam, lParam);
 }
