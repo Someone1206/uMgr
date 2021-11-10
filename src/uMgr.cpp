@@ -113,7 +113,7 @@ private:
     };
 public:
     MainWindow()
-        :Window(nullptr, "Useless Manger", -1, Point(CW_USEDEFAULT, CW_USEDEFAULT), Size(640, 480), normWinStyle)
+        :Window<MainWindow>(nullptr, "Useless Manger", -1, Point(CW_USEDEFAULT, CW_USEDEFAULT), Size(640, 480), normWinStyle)
     {
         Button* btn = new Button(hWnd, BTN_KILL, "Kill Me", Point(), Size(300, 100));
         UpdateWindow(btn->hWnd);
