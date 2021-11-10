@@ -20,12 +20,10 @@ public:
 
     void Show(bool show = true)
     {
-        INT choice; // y not?
         if (show)
-            choice = SW_SHOW;
+            ShowWindow(hWnd, SW_SHOW);
         else
-            choice = SW_HIDE;
-        ShowWindow(hWnd, choice);
+            ShowWindow(hWnd, SW_HIDE);
     }
 
     void Destroy()

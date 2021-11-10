@@ -15,9 +15,9 @@ Button::Button(HWND parent, int id, LPCSTR text, const Point& pos, const Size& _
     hWnd = CreateWindowEx(
         0,
         "buTTon", text, styles,
-        Position.x, Position.y,
-        size.x, size.y,
-        Parent, (HMENU)ID, GetModuleHandle(nullptr), nullptr
+        pos.x, pos.y,
+        _size.x, _size.y,
+        parent, (HMENU)ID, GetModuleHandle(nullptr), nullptr
     );
 
     Show();
