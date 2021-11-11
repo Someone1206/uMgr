@@ -7,7 +7,7 @@ class FirstSetup
 {
 private:
     char len = 0;
-    bool do_smth = false;
+    bool change_folderPerm = false;
 
     wxString __choices[3];
     wxString paf_selected = uFolder, _this_paf;

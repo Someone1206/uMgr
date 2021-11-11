@@ -1,4 +1,5 @@
 #include <wx/wx.h>
+#include "FirstSetup.h"
 
 class uMgr
     :public wxApp {
@@ -16,5 +17,23 @@ bool uMgr::OnInit() {
         "https://www.github.com/Someone1206/uMgr"));
     return false;
 #endif
+
+    //////////////////////////////////////////////////////////////////////////////////////
+    // initialise the global variables                                                  //
+    char GV::consts::fsep = std::filesystem::path::preferred_separator;                 //
+    std::filesystem::path GV::consts::uPaf;                                             //
+    std::string GV::consts::uName = GV::getU_F_name();                                  //
+                                                                                        //
+#if _WIN32                                                                              //
+    std::string GV::consts::c_app_data = "uMgr_A_Data";                                 //
+#else                                                                                   //
+    std::string GV::consts::c_app_data = ".uMgr_A_Data";                                //
+    // i mean wtaf linux(unix) kernel? y u add .                                        //
+#endif                                                                                  //
+                                                                                        //
+    std::string GV::constsuser_data_folder;                                             //
+    //                                                                                  //
+    //////////////////////////////////////////////////////////////////////////////////////
+
     // create windoe
 }
