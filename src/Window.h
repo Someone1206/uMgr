@@ -1,4 +1,5 @@
 #include "BaseWin.h"
+#include <iostream>
 
 template<class D_CLASS>
 class Window
@@ -11,7 +12,10 @@ private:
     //static HWND this_hwnd;
 public:
     // declare this fn in the inherited class and use as wnd proc
-    virtual LRESULT HandleMessages(UINT msg, WPARAM wParam, LPARAM lParam) = 0;
+    virtual LRESULT HandleMessages(UINT msg, WPARAM wParam, LPARAM lParam)
+    {
+        return DefWindowProc(hWnd, msg, wParam, lParam);
+    }
 
 
     static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
@@ -20,13 +24,13 @@ public:
         if (msg == WM_NCCREATE) {
             CREATESTRUCT* create = (CREATESTRUCT*)lParam;
             p_this = (D_CLASS*)create->lpCreateParams;
+            p_this->hWnd = hwnd;
             SetWindowLongPtr(hwnd, GWLP_USERDATA, (LONG_PTR)p_this);
-            // p_this->hWnd\d = hwnd;
         }
         else
             p_this = (D_CLASS*)GetWindowLongPtr(hwnd, GWLP_USERDATA);
 
-        if (p_this)
+        if (p_this && p_this->hWnd)
             return p_this->HandleMessages(msg, wParam, lParam);
         else
             return DefWindowProc(hwnd, msg, wParam, lParam);
@@ -53,6 +57,7 @@ public:
         wc.hIconSm = nullptr;
 
         RegisterClassEx(&wc);
+        UpdateWindow(this->hWnd);
 
         HMENU _id = nullptr;
         if (!((styles & WS_CHILD) != WS_CHILD || id == -1))
