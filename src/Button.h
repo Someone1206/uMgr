@@ -5,21 +5,21 @@ class Button
     :public BaseWin
 {
 public:
-    Button(HWND parent, int id, LPCSTR text, const Point& pos, const Size& _size, int styles = WS_CHILD);
+    Button(HWND parent, int id, LPCSTR text, const Point& pos, const Size& _size, int styles = WS_CHILD, HINSTANCE _hInst = GetModuleHandle(nullptr));
     ~Button();
 };
 
-Button::Button(HWND parent, int id, LPCSTR text, const Point& pos, const Size& _size, int styles)
-    :BaseWin(parent, pos, size, id)
+Button::Button(HWND parent, int id, LPCSTR text, const Point& pos, const Size& _size,
+    int styles, HINSTANCE _hInst)
+    :BaseWin(parent, pos, _size, id, _hInst)
 {
     hWnd = CreateWindowEx(
         0,
         "buTTon", text, styles,
-        pos.x, pos.y,
-        _size.x, _size.y,
-        parent, (HMENU)ID, GetModuleHandle(nullptr), nullptr
+        Position.x, Position.y,
+        size.x, size.y,
+        Parent, (HMENU)ID, hInst, nullptr
     );
-
     Show();
 }
 
