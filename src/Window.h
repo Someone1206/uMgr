@@ -1,5 +1,8 @@
+#pragma once
 #include "BaseWin.h"
-#include <iostream>
+#define WIN_DETACH_PAR 0x45 // detach the window from the parent, i.e. 
+// window will have a different tab on task bar
+
 
 template<class D_CLASS>
 class Window
@@ -39,7 +42,7 @@ public:
     Window(HWND parent, LPCSTR title, int id, const Point& pos, const Size& _size,
         int styles = WS_OVERLAPPEDWINDOW, int retVal = 69, int stylesEx = 0
     )
-        :BaseWin(parent, pos, _size, id), returnValue(retVal)
+        :BaseWin(parent, pos, _size, id, GetModuleHandle(nullptr)), returnValue(retVal)
     {
         WNDCLASSEX wc = { 0 };
 
@@ -48,7 +51,7 @@ public:
         wc.lpfnWndProc = D_CLASS::WndProc;
         wc.cbClsExtra = 0;
         wc.cbWndExtra = 0;
-        wc.hInstance = GetModuleHandle(nullptr);
+        wc.hInstance = hInst;
         wc.hIcon = nullptr;
         wc.hCursor = LoadCursor(nullptr, IDC_ARROW);
         wc.hbrBackground = nullptr;
@@ -59,23 +62,29 @@ public:
         RegisterClassEx(&wc);
         UpdateWindow(this->hWnd);
 
+        // if you don't care about the id (-1), it'll be nullptr
         HMENU _id = nullptr;
         if (!((styles & WS_CHILD) != WS_CHILD || id == -1))
             _id = (HMENU)ID;
 
+        // if thw window to be created sud have a different tab in the task bar
+        HWND hwnd_to_use = Parent;
+        if ((styles & WIN_DETACH_PAR) == WIN_DETACH_PAR)
+            hwnd_to_use = nullptr;
+        // windows sud ignore dis useless value of win_detach_par
         hWnd = CreateWindowEx(
             stylesEx,
             className, title,
             styles,
             Position.x, Position.y, size.x, size.y,
-            parent, _id, GetModuleHandle(nullptr), this
+            hwnd_to_use, _id, hInst, this
         );
 
     }
     
     ~Window()
     {
-        UnregisterClass(className, GetModuleHandle(nullptr));
+        UnregisterClass(className, hInst);
         Destroy();
     }
 };
