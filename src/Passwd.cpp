@@ -34,7 +34,7 @@ Passwd::Passwd(const wxString& title)
     wxButton* canc = new wxButton(__p_pane, ID_CANC, "Cancel -_-?");
     // wxButton* f_pwd = new wxButton(__p_pane, ID_F_PWD, "Forgot Password"); later
 
-    btn_s->Add(レツゴ, 0.5, wxALL, 5);
+    btn_s->Add(レツゴ, 0.5, wxALL, 5);    // :>
     btn_s->Add(canc, 0.5, wxALL, 5);
     // btn_s->Add(f_pwd, 0.5, wxALL, 5);
 
@@ -60,7 +60,7 @@ void Passwd::_r_g(wxCommandEvent& evt)
         return;
     }
 
-    mainFrame* uhh = new mainFrame("fuk me", wxDefaultPosition, wxDefaultSize);
+    mainFrame* uhh = new mainFrame("uMgr", wxDefaultPosition, wxDefaultSize);
     this->Show(false);
     uhh->Show();
     Destroy();

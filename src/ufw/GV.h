@@ -75,6 +75,8 @@ std::string GV::getU_F_name()
 #define uPAF      GV::consts::uPaf
 #define SET_NO    2 // number of setting, for array, currently 2
 static constexpr char SEP = (char)1;
+static constexpr std::string prefFolder = aFolder + FSEP + "Preferences";
+// fook i'm tired with dat dot
 
 #if _WIN32
 // hide the files on creation when Windows
