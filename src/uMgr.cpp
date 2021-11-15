@@ -39,8 +39,7 @@ bool uMgr::OnInit() {
     if (!std::filesystem::exists(prefFolder))
     {
 #if _WIN32
-        std::wstring uhhhhh(prefFolder.start(), prefFolder.end());
-        LPCWSTR irdk = uhhhhh.c_str();
+        LPCSTR irdk = prefFolder.c_str();
         CreateDirectory(irdk, nullptr);
         // hide the directory
         SetFileAttributes(irdk, FILE_ATTRIBUTE_HIDDEN);
@@ -58,9 +57,16 @@ bool uMgr::OnInit() {
         f->Centre(wxBOTH);
         f->Show();
     }
-    else if (!std::filesystem::exists((aFolder + FSEP + "pwd.hentai")))
-    // if passwd is located,
+    else if (!std::filesystem::exists((aFolder + FSEP + PWD_FILE) && (!std::ifstream((aFolder + FSEP + PWD_FILE)).eof())))
+    // if passwd is located, && not empty
     {
-        
+        Passwd* password = new Passwd("Authentication");
+        password->Centre(wxBOTH);
+        password->Show();
+    }
+    else {
+        //
+        mainFrame* im_tired = new mainFrame();
+        im_tired->Show();
     }
 }

@@ -48,7 +48,7 @@ void Passwd::_r_g(wxCommandEvent& evt)
 {
     wxString pwd_ff;
     {
-        std::ifstream pwd_file((GV::consts::c_app_data + FSEP + "pwd.hentai"));
+        std::ifstream pwd_file((aFolder + FSEP + "pwd.hentai"));
         std::string tmp;
         getline(pwd_file, tmp);
         pwd_ff = tmp;
@@ -60,7 +60,12 @@ void Passwd::_r_g(wxCommandEvent& evt)
         return;
     }
 
-    mainFrame* uhh = new mainFrame("uMgr", wxDefaultPosition, wxDefaultSize);
+    std::ifstream titleFile(prefFolder + FSEP + "title.hentai");
+    std::string title = "uMgr";
+    if (titleFile && !titleFile.eof())
+        getline(titleFile, title);
+
+    mainFrame* uhh = new mainFrame(title, wxDefaultPosition, wxDefaultSize); // cuztom title :>
     this->Show(false);
     uhh->Show();
     Destroy();

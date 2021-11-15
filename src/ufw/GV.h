@@ -73,7 +73,12 @@ std::string GV::getU_F_name()
 #define uFolder   GV::consts::user_data_folder
 #define aFolder   GV::consts::c_app_data
 #define uPAF      GV::consts::uPaf
+
+#define PWD_FILE  "pwd.hentai" // name of password file, (if it changes any day)
+#define PREF_FILE "preferences.hentai" // file of bool values (too long to write every where)
+
 #define SET_NO    2 // number of setting, for array, currently 2
+
 static constexpr char SEP = (char)1;
 static constexpr std::string prefFolder = aFolder + FSEP + "Preferences";
 // fook i'm tired with dat dot
