@@ -74,8 +74,9 @@ std::string GV::getU_F_name()
 #define aFolder   GV::consts::c_app_data
 #define uPAF      GV::consts::uPaf
 
-#define PWD_FILE  "pwd.hentai" // name of password file, (if it changes any day)
-#define PREF_FILE "preferences.hentai" // file of bool values (too long to write every where)
+#define PWD_FILE  "pwd.hentai"          // name of password file, (if it changes any day)
+#define PREF_FILE "preferences.hentai"  // file of bool values (too long to write every where)
+#define TIT_FILE  "title.hentai"        // if i wish to change it any day
 
 #define SET_NO    2 // number of setting, for array, currently 2
 

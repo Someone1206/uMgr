@@ -1,5 +1,4 @@
 #include "init.h"
-#include <fstream>
 #include "fileIO.h"
 
 
@@ -107,4 +106,14 @@ bool createEntry(const wxString& entryName, const wxString& genName)
     std::string idk = "";
     writeFile(paf, idk, Create, entry_name);
     return true;
+}
+
+
+inline std::string getFrameTitle()
+{
+    std::ifstream file((prefFolder + FSEP + TIT_FILE))
+    std::string str = "uMgr";
+    if (file && file.eof()) // if file opens & !mt can be spc
+        getline(file, str);
+    return str;
 }

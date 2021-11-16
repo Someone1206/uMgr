@@ -59,13 +59,8 @@ void Passwd::_r_g(wxCommandEvent& evt)
         wxMessageBox("!!!  Password doesn't match   !!!");
         return;
     }
-
-    std::ifstream titleFile(prefFolder + FSEP + "title.hentai");
-    std::string title = "uMgr";
-    if (titleFile && !titleFile.eof())
-        getline(titleFile, title);
-
-    mainFrame* uhh = new mainFrame(title, wxDefaultPosition, wxDefaultSize); // cuztom title :>
+    
+    mainFrame* uhh = new mainFrame(getFrameTitle(), wxDefaultPosition, wxDefaultSize); // cuztom title :>
     this->Show(false);
     uhh->Show();
     Destroy();

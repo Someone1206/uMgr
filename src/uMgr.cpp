@@ -65,8 +65,10 @@ bool uMgr::OnInit() {
         password->Show();
     }
     else {
-        //
-        mainFrame* im_tired = new mainFrame();
+        // if not password protected!
+        mainFrame* im_tired = new mainFrame(getFrameTitle(), wxDefaultPosition, wxDefaultSize);
         im_tired->Show();
     }
+
+    return true;
 }
