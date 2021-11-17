@@ -171,6 +171,7 @@
     <ClInclude Include="src\bits\Point.h" />
     <ClInclude Include="src\bits\Size.h" />
     <ClInclude Include="src\Button.h" />
+    <ClInclude Include="src\ComboBox.h" />
     <ClInclude Include="src\Window.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

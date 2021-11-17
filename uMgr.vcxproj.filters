@@ -10,5 +10,6 @@
     <ClInclude Include="src\Window.h" />
     <ClInclude Include="src\BaseWin.h" />
     <ClInclude Include="src\Button.h" />
+    <ClInclude Include="src\ComboBox.h" />
   </ItemGroup>
 </Project>

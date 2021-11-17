@@ -28,4 +28,6 @@ public:
     {
         DestroyWindow(hWnd);
     }
+
+    static constexpr char SEP = (char)1;
 };

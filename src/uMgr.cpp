@@ -1,5 +1,6 @@
 #include "Window.h"
 #include "Button.h"
+#include "ComboBox.h"
 
 #define normWinStyle WS_CAPTION | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_SYSMENU
 
@@ -53,6 +54,7 @@ class MainWindow
 private:
     HMENU menuBar;
     HMENU menuIt;
+    ComboBox* genres = nullptr;
 
     enum
     {
@@ -60,13 +62,14 @@ private:
         BTN_NEWwIN,
         M_QUIT,
         M_ADD_LOG,
-        M_ABT
+        M_ABT,
+        CB_GEN
     };
 public:
     MainWindow()
         :Window<MainWindow>(nullptr, "Useless Manger", -1, Point(), Size(640, 480), WS_OVERLAPPEDWINDOW)
     {
-        Button* btn = new Button(hWnd, -1, "Kill Me", Point(), Size(300, 100));
+        Button* btn = new Button(hWnd, BTN_KILL, "Kill Me", Point(), Size(300, 100));
         UpdateWindow(btn->hWnd);
         Button btn1(hWnd, BTN_NEWwIN, "New Window", Point(310, 0), Size(280, 100));
 
@@ -77,6 +80,11 @@ public:
         AppendMenu(menuBar, MF_ENABLED | MF_STRING, M_ABT,"About Me");
         AppendMenu(menuBar, MF_POPUP, (UINT_PTR)menuIt, "Add");
 
+        genres = new ComboBox(this->hWnd, Point(10, 120), Size(100, -1), CB_GEN);
+        {
+            std::ifstream file(("uMgrData\\GenreIndex.baka"));
+            genres->updateList(file);
+        }
         SetMenu(hWnd, menuBar);
     }
 
@@ -106,6 +114,10 @@ public:
             {
                 AboutWindow* abt = new AboutWindow(this->hWnd);
                 abt->Show();
+            }
+            else if (HIWORD(wParam) == CBN_SELCHANGE)
+            {
+                // later
             }
         }
 
