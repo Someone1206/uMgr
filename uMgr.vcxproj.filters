@@ -2,6 +2,7 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="src\uMgr.cpp" />
+    <ClCompile Include="src\ComboBox.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Bits.h" />
@@ -11,5 +12,6 @@
     <ClInclude Include="src\BaseWin.h" />
     <ClInclude Include="src\Button.h" />
     <ClInclude Include="src\ComboBox.h" />
+    <ClInclude Include="src\About.h" />
   </ItemGroup>
 </Project>

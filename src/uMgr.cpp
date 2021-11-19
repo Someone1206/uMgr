@@ -1,6 +1,7 @@
 #include "Window.h"
 #include "Button.h"
 #include "ComboBox.h"
+#include <fstream>
 
 #define normWinStyle WS_CAPTION | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_SYSMENU
 
@@ -55,11 +56,12 @@ private:
     HMENU menuBar;
     HMENU menuIt;
     ComboBox* genres = nullptr;
+    std::string* paf_list = new std::string[5];
 
     enum
     {
         BTN_KILL,
-        BTN_NEWwIN,
+        BTN_CLS,
         M_QUIT,
         M_ADD_LOG,
         M_ABT,
@@ -71,7 +73,7 @@ public:
     {
         Button* btn = new Button(hWnd, BTN_KILL, "Kill Me", Point(), Size(300, 100));
         UpdateWindow(btn->hWnd);
-        Button btn1(hWnd, BTN_NEWwIN, "New Window", Point(310, 0), Size(280, 100));
+        Button btn1(hWnd, BTN_CLS, "クリア ComboBox", Point(310, 0), Size(280, 100));
 
         menuBar = CreateMenu();
         menuIt = CreateMenu();
@@ -83,9 +85,10 @@ public:
         genres = new ComboBox(this->hWnd, Point(10, 120), Size(100, -1), CB_GEN);
         {
             std::ifstream file(("uMgrData\\GenreIndex.baka"));
-            genres->updateList(file);
+            genres->updateList_A(file, paf_list, true);
         }
         SetMenu(hWnd, menuBar);
+        MessageBox(this->hWnd, genres->getTxt(0).c_str(), "やったね！", MB_OKCANCEL | MB_ICONINFORMATION);
     }
 
 
@@ -114,6 +117,10 @@ public:
             {
                 AboutWindow* abt = new AboutWindow(this->hWnd);
                 abt->Show();
+            }
+            else if (LOWORD(wParam) == BTN_CLS)
+            {
+                genres->Clear();
             }
             else if (HIWORD(wParam) == CBN_SELCHANGE)
             {
