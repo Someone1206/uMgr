@@ -1,52 +1,10 @@
 #include "Window.h"
 #include "Button.h"
 #include "ComboBox.h"
+#include "About.h"
 #include <fstream>
 
 #define normWinStyle WS_CAPTION | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_SYSMENU
-
-
-class AboutWindow
-    :public Window<AboutWindow>
-{
-private:
-    HWND txt;
-public:
-    AboutWindow(HWND parent);
-
-    LRESULT HandleMessages(UINT msg, WPARAM wParam, LPARAM lParam)
-    {
-        switch (msg)
-        {
-        case WM_CLOSE:
-            EnableWindow(this->Parent, TRUE);
-            Destroy();
-            break;
-        case WM_PAINT:
-        {
-            PAINTSTRUCT ps;
-            HDC hdc = BeginPaint( this->hWnd, &ps);
-            FillRect(hdc, &ps.rcPaint, (HBRUSH)(COLOR_WINDOW + 1));
-            EndPaint(this->hWnd, &ps);
-            break;
-        }
-        }
-        return DefWindowProc(this->hWnd, msg, wParam, lParam);
-    }
-};
-
-AboutWindow::AboutWindow(HWND parent)
-    :Window(parent, "About Me", 20, Point(), Size(), WS_CAPTION | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_SYSMENU | WIN_DETACH_PAR, -69)
-{
-    EnableWindow(this->Parent, FALSE);
-    txt = CreateWindowEx(
-        0,
-        "edIt", "",
-        WS_CHILD, 1, 1, 50, 50,
-        this->hWnd, (HMENU)12, this->hInst, nullptr
-    );
-    ShowWindow(txt, SW_SHOW);
-}
 
 
 class MainWindow
@@ -57,6 +15,8 @@ private:
     HMENU menuIt;
     ComboBox* genres = nullptr;
     std::string* paf_list = new std::string[5];
+
+    Button* btn_kill = nullptr, * cls_cbox = nullptr;
 
     enum
     {
@@ -71,9 +31,10 @@ public:
     MainWindow()
         :Window<MainWindow>(nullptr, "Useless Manger", -1, Point(), Size(640, 480), WS_OVERLAPPEDWINDOW)
     {
-        Button* btn = new Button(hWnd, BTN_KILL, "Kill Me", Point(), Size(300, 100));
-        UpdateWindow(btn->hWnd);
-        Button btn1(hWnd, BTN_CLS, "クリア ComboBox", Point(310, 0), Size(280, 100));
+        btn_kill = new Button(hWnd, BTN_KILL, "Kill Me", Point(), Size(300, 100));
+        btn_kill->Show(1);
+        //Button btn1(hWnd, BTN_CLS, "クリア ComboBox", Point(310, 0), Size(280, 100));
+        cls_cbox = new Button(this->hWnd, BTN_CLS, "クリア ComboBox", Point(310, 0), Size(280, 100));
 
         menuBar = CreateMenu();
         menuIt = CreateMenu();
@@ -88,7 +49,7 @@ public:
             genres->updateList_A(file, paf_list, true);
         }
         SetMenu(hWnd, menuBar);
-        MessageBox(this->hWnd, genres->getTxt(0).c_str(), "やったね！", MB_OKCANCEL | MB_ICONINFORMATION);
+        //MessageBox(this->hWnd, genres->getTxt(0).c_str(), "やったね！", MB_OKCANCEL | MB_ICONINFORMATION);
     }
 
 
@@ -115,7 +76,7 @@ public:
             }
             else if (LOWORD(wParam) == M_ABT)
             {
-                AboutWindow* abt = new AboutWindow(this->hWnd);
+                About* abt = new About(this->hWnd);
                 abt->Show();
             }
             else if (LOWORD(wParam) == BTN_CLS)
@@ -126,6 +87,7 @@ public:
             {
                 // later
             }
+            break;
         }
 
         return DefWindowProc(hWnd, msg, wParam, lParam);

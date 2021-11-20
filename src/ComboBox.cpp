@@ -72,7 +72,8 @@ void ComboBox::setList(std::string* arr, size_t len)
 std::string ComboBox::getTxt(int index)
 {
     int len = SendMessage(this->hWnd, CB_GETLBTEXTLEN, index, 0);
-    TCHAR txt[len + 1];
+    //TCHAR txt[len + 1];
+    TCHAR* txt = new TCHAR(len + 1);
     SendMessage(this->hWnd, CB_GETLBTEXT, index, (LPARAM)txt);
 #ifndef NDEBUG
     MessageBox(nullptr, txt, "lll", MB_OKCANCEL);
