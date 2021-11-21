@@ -34,10 +34,10 @@ void ComboBox::updateList(std::ifstream& indexFile, bool setFirstIndex) {
         SendMessage(this->hWnd, CB_SETCURSEL, 0, 0);
 }
 
-void ComboBox::updateList_A(std::ifstream& indexFile, std::string* paf_arr, bool setFirstIndex)
+void ComboBox::updateList_A(std::ifstream& indexFile, std::string*& paf_arr, bool setFirstIndex)
 {
     std::string str = "";
-    int index = 0, i = 0;
+    int index = 0;
     while (getline(indexFile, str))
     {
         if (str == "")
@@ -49,7 +49,6 @@ void ComboBox::updateList_A(std::ifstream& indexFile, std::string* paf_arr, bool
     }
     if (setFirstIndex)
         this->setIndex(0);
-
 #ifndef NDEBUG
     std::string tmpStr = "";
     for (int j = -1; ++j < i;)
