@@ -17,9 +17,9 @@ private:
     HMENU menu_edit;
     HMENU menu_abt;
     ComboBox* genres = nullptr;
-    std::string* paf_list = new std::string[5];
+    std::string* paf_list;
 
-    Button* btn_kill = nullptr, * cls_cbox = nullptr;
+    Button* last10logs = nullptr, * allLogs = nullptr, * addLog = nullptr;
 
     enum
     {
@@ -27,26 +27,27 @@ private:
         // m -> menu bar,
         // cb -> combobox,
         // t -> text box
-        BTN_KILL, BTN_CLS,
-        BTN_LL /*last logs*/, BTN_AL /*all logs*/,
+        BTN_LL /*last logs*/, BTN_AL /*all logs*/, BTN_ADD /*add log for genre/grp*/,
         CB_GEN /*genres*/,
         M_QUIT,
         M_ADD_LOG, M_ADD_GEN, M_PREF, M_ABT, M_SUP
     };
 public:
     MainWindow()
-        :Window<MainWindow>(nullptr, "Useless Manger", -1, Point(), Size(640, 480), WS_OVERLAPPEDWINDOW)
+        :Window<MainWindow>(nullptr, "Useless Manger", -1, Point(), Size(640, 480),
+        WS_OVERLAPPEDWINDOW)
     {
-        btn_kill = new Button(hWnd, BTN_KILL, "Kill Me", Point(), Size(300, 100));
-        btn_kill->Show(1);
-        //Button btn1(hWnd, BTN_CLS, "クリア ComboBox", Point(310, 0), Size(280, 100));
-        cls_cbox = new Button(this->hWnd, BTN_CLS, "クリア ComboBox", Point(310, 0), Size(280, 100));
-        
-        
-        genres = new ComboBox(this->hWnd, Point(10, 120), Size(100, -1), CB_GEN);
+        last10logs = new Button(hWnd, BTN_LL, "Last 10 Logs", Point(210, 12), Size(170, 40));
+        allLogs = new Button(this->hWnd, BTN_AL, "All Logs", Point(430, 15), Size(170, 40));
+        addLog = new Button(this->hWnd, BTN_ADD, "Add Log", Point(), Size(0, 0));
+        addLog->Show(0);
+
+        genres = new ComboBox(this->hWnd, Point(10, 20), Size(150, -1), CB_GEN);
         {
+            genres->Add("Logs");
             std::ifstream file(("uMgrData\\GenreIndex.baka"));
-            genres->updateList_A(file, paf_list, true);
+            if(file)
+            genres->updateList_A(file, paf_list, true, CB_INIT_PAF);
         }
 
 
@@ -70,7 +71,6 @@ public:
         AppendMenu(menuBar, MF_ENABLED | MF_STRING, M_QUIT, "Quit");
 
         SetMenu(hWnd, menuBar);
-        //MessageBox(this->hWnd, genres->getTxt(0).c_str(), "やったね！", MB_OKCANCEL | MB_ICONINFORMATION);
     }
 
 
@@ -90,19 +90,19 @@ public:
             break;
         }
         case WM_COMMAND:
-            if (LOWORD(wParam) == BTN_KILL)
+            if (LOWORD(wParam) == M_QUIT)
             {
-                PostQuitMessage(this->returnValue);
+                bool res = MessageBox(this->hWnd, "Wanna Rully Quit?\n何で？", "エーーー",
+                    MB_OKCANCEL | MB_ICONWARNING
+                );
+                if (res)
+                    PostQuitMessage(this->returnValue);
                 break;
             }
             else if (LOWORD(wParam) == M_ABT)
             {
-                About* abt = new About(this->hWnd);
+                About* abt = new About(this->hWnd, Size(300, 150));
                 abt->Show();
-            }
-            else if (LOWORD(wParam) == BTN_CLS)
-            {
-                genres->Clear();
             }
             else if (HIWORD(wParam) == CBN_SELCHANGE)
             {
@@ -113,6 +113,9 @@ public:
                     if (counter != 0)
                     {
                         RemoveMenu(menu_add, 0, MF_BYPOSITION);
+                        addLog->Show(0);
+                        last10logs->Show();
+                        allLogs->Show();
                         counter = 0;
                     }
                 }
@@ -121,8 +124,20 @@ public:
                         RemoveMenu(menu_add, 0, MF_BYPOSITION);
                         AppendMenu(menu_add, MF_ENABLED, M_ADD_LOG, "Add Log");
                         AppendMenu(menu_add, MF_ENABLED, M_ADD_GEN, "Add Genre");
+
+                        addLog->Resize(
+                            Size(last10logs->size.x + allLogs->size.x,
+                                last10logs->size.y), 
+                            Point(last10logs->Position + Point(10, 0))
+                        );
+                        last10logs->Show(0);
+                        allLogs->Show(0);
+                        addLog->Show();
+
                         counter = 1;
                     }
+                    MessageBox(this->hWnd, paf_list[index - 1].c_str(), 
+                        "Seleted", MB_OKCANCEL | MB_ICONINFORMATION);
                 }
             }
             break;
@@ -137,7 +152,8 @@ int CALLBACK WinMain(
     HINSTANCE hInst,
     HINSTANCE h_p_Inst,
     LPSTR     nCmdLine,
-    int       nCmdShow)
+    int       nCmdShow
+)
 {
     MainWindow* window = new MainWindow();
     window->Show();
