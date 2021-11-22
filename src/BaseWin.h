@@ -29,5 +29,9 @@ public:
         DestroyWindow(hWnd);
     }
 
+    void Resize(const Size& _size, const Point& pos) {
+        MoveWindow(hWnd, pos.x, pos.y, _size.x, _size.y, true);
+    }
+
     static constexpr char SEP = (char)1;
 };

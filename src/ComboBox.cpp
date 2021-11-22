@@ -34,24 +34,41 @@ void ComboBox::updateList(std::ifstream& indexFile, bool setFirstIndex) {
         SendMessage(this->hWnd, CB_SETCURSEL, 0, 0);
 }
 
-void ComboBox::updateList_A(std::ifstream& indexFile, std::string*& paf_arr, bool setFirstIndex)
+void ComboBox::updateList_A(std::ifstream& indexFile, std::string*& paf_arr, bool setFirstIndex, int initPafStr)
 {
-    std::string str = "";
-    int index = 0;
-    while (getline(indexFile, str))
+    std::string paths = "";
+    int len = 0;
     {
-        if (str == "")
-            continue;
-        index = str.find_last_of(BaseWin::SEP);
-        SendMessage(this->hWnd, (UINT)CB_ADDSTRING, 0,
-            (LPARAM)((TCHAR*)const_cast<char*>(str.substr(0, index).c_str())));
-        paf_arr[i++] = str.substr(index + 1);
+        std::string str = "";
+        int index = 0;
+        while (getline(indexFile, str))
+        {
+            if (str == "")
+                continue;
+            index = str.find_last_of(BaseWin::SEP);
+            SendMessage(this->hWnd, (UINT)CB_ADDSTRING, 0,
+                (LPARAM)((TCHAR*)const_cast<char*>(str.substr(0, index).c_str())));
+            len++;
+            paths += (str.substr(index + 1) + '\n');
+        }
     }
+
     if (setFirstIndex)
         this->setIndex(0);
+
+    unsigned int n_at = 0;
+    if(initPafStr == CB_INIT_PAF)
+    {
+        paf_arr = new std::string[len];
+        for (unsigned int i = 0; i < len; i++) {
+            n_at = paths.find_first_of('\n');
+            paf_arr[i] = paths.substr(0, n_at);
+            paths = paths.substr(n_at + 1);
+        }
+    }
 #ifndef NDEBUG
     std::string tmpStr = "";
-    for (int j = -1; ++j < i;)
+    for (int j = -1; ++j < len;)
     {
         tmpStr += paf_arr[j] + '\n';
     }
