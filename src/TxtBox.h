@@ -1,7 +1,6 @@
 #pragma once
 #include "BaseWin.h"
 #include <string>
-#include <algorithm>
 // #include <boost/algorithm/string/replace.hpp>
 
 
@@ -14,9 +13,18 @@
 class TxtBox
 	:public BaseWin
 {
+
+	void Create(HWND parent, const char* txt, const Point& pos, const Size& _size,
+		int id, int styles, int stylesEx
+	);
+
 public:
 
 	TxtBox(HWND parent, std::string& content, const Point& pos, 
+		const Size& _size, int id, int styles = 0, int stylesEx = 0
+	);
+
+	TxtBox(HWND parent, const char* content, const Point& pos,
 		const Size& _size, int id, int styles = 0, int stylesEx = 0
 	);
 
@@ -25,6 +33,12 @@ public:
 	*/
 	void manageFns(UINT msg, WPARAM wParam, LPARAM lParam);
 	void manageFns(WPARAM wParam, LPARAM lParam);
+
+	void SetTxt(const std::string& txt) {
+		SendMessage(this->hWnd, WM_SETTEXT, 0, (LPARAM)txt.c_str());
+	}
+
+	void AddTxt(const std::string& txt);
 
 	~TxtBox() { /* _____ */ };
 };
@@ -42,7 +56,19 @@ TxtBox::TxtBox(HWND parent, std::string& content, const Point& pos, const Size& 
 				content.replace(index - 2, 1, "\r\n");
 			}
 	}
+	Create(Parent, content.c_str(), Position, size, ID, styles, stylesEx);
+}
 
+inline TxtBox::TxtBox(HWND parent, const char* content, const Point& pos,
+	const Size& _size, int id, int styles, int stylesEx)
+	:BaseWin(parent, pos, _size, id, GetModuleHandle(nullptr))
+{
+	Create(Parent, content, Position, size, ID, styles, stylesEx);
+}
+
+void TxtBox::Create(HWND parent, const char* txt, const Point& pos, 
+	const Size& _size, int id, int styles, int stylesEx)
+{
 	hWnd = CreateWindowEx(
 		stylesEx,
 		"eDiT", nullptr,
@@ -54,9 +80,8 @@ TxtBox::TxtBox(HWND parent, std::string& content, const Point& pos, const Size& 
 
 	Show(true);
 
-	SendMessage(this->hWnd, WM_SETTEXT, 0, (LPARAM)content.c_str());
+	SendMessage(this->hWnd, WM_SETTEXT, 0, (LPARAM)txt);
 }
-
 
 void TxtBox::manageFns(UINT msg, WPARAM wParam, LPARAM lParam)
 {
@@ -78,4 +103,12 @@ void TxtBox::manageFns(WPARAM wParam, LPARAM lParam)
 		SendMessage(this->hWnd, WM_CUT, 0, 0);
 		return;
 	}
+}
+
+void TxtBox::AddTxt(const std::string& txt)
+{
+	unsigned long long index = GetWindowTextLength(this->hWnd);
+	SetFocus(this->hWnd);
+	SendMessage(this->hWnd, EM_SETSEL, index, index);
+	SendMessage(this->hWnd, EM_REPLACESEL, 0, (LPARAM)txt.c_str());
 }

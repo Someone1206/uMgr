@@ -6,6 +6,9 @@
 changeEmail.sh
 # a change email script @https://docs.github.com/en/enterprise/2.17/user/github/using-git/changing-author-info#changing-the-git-history-of-your-repository-using-a-script
 
+compile.cmd
+# cmd file to compile stuffs
+
 ## Baka files are not needed, I guess? heh hentai file are obviously not needed
 *.baka
 *.hentai
