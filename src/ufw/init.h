@@ -1,10 +1,11 @@
 #pragma once
 #include <wx/wx.h>
 #include <filesystem>
+#include "GV.h"
 
-bool settings(bool* choices);
+bool settings(bool(&choices)[SET_NO]);
 
-void init(bool* choices);
+void init(bool(&choices)[SET_NO]);
 
 bool createGen(const wxString& genName);
 

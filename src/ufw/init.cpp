@@ -1,36 +1,33 @@
 #include "init.h"
 #include "fileIO.h"
 
-
-bool settings(bool* choices) {
-    std::string paf = GV::consts::c_app_data + GV::consts::fsep + "Settings.baka";
+bool settings(bool(&choices)[SET_NO])
+{
+    std::string paf = PREF_FOLDER + FSEP + PREF_FILE;
 
     std::ifstream file(paf);
     if (!file.is_open()) {
-        choices = nullptr;
         return false;
     }
 
-    bool res = readTrackerFile(file, choices);
+    std::optional<bool> res = readTrackerFile(file, choices);
 
-    choices = nullptr;
-    return res;
+    return res.value();
 }
 
-void init(bool* choices)
+void init(bool(&choices)[SET_NO])
 {
     {
-        std::string paf = GV::consts::c_app_data + FSEP + "pafs.hentai";
+        std::string paf = aFolder + FSEP + "pafs.hentai";
         std::ifstream paf_file(paf);
-        getline(paf_file, GV::consts::user_data_folder);
+        getline(paf_file, uFolder);
     }
 
-    fs::create_directory(GV::consts::user_data_folder); //
-    fs::create_directory(GV::consts::c_app_data);       //
+    std::filesystem::create_directories(aFolder);
 
     {
-        std::string paf = GV::consts::c_app_data + GV::consts::fsep + "Settings.baka";
-        if (!fs::exists((paf))) {
+        std::string paf = PREF_FOLDER + FSEP + PREF_FILE;
+        if (!std::filesystem::exists((paf))) {
             std::ofstream f(paf);
             f << 1 << std::endl;
             f << 0;
@@ -41,16 +38,16 @@ void init(bool* choices)
     // idk if this works but does it improve the memory management (by destroying[or whatever it's called] the string var)
 
     {
-        std::string paf = GV::consts::user_data_folder + GV::consts::fsep + "LastLogs.baka";
-        if (!fs::exists(paf)) {
+        std::string paf = uFolder + FSEP + "LastLogs.baka";
+        if (!std::filesystem::exists(paf)) {
             std::ofstream file(paf);
             // file << (char)1;
             file.close();
         }
     }
     {
-        std::string paf = GV::consts::user_data_folder + GV::consts::fsep + "AllLogs.hentai"; // 😅
-        if (!fs::exists(paf)) {
+        std::string paf = uFolder + FSEP + "AllLogs.hentai"; // 😅
+        if (!std::filesystem::exists(paf)) {
             std::ofstream file(paf);
             // file << (char)1;
             file.close();
@@ -58,14 +55,13 @@ void init(bool* choices)
     }
 
     if (choices[0]) {
-        std::string paf = GV::consts::user_data_folder + GV::consts::fsep;
-        fs::create_directory((paf + "Anime"));
-        fs::create_directory((paf + "Manga"));
-        fs::create_directory((paf + "Movies"));
+        std::string paf = uFolder + FSEP;
+        std::filesystem::create_directory((paf + "Anime"));
+        std::filesystem::create_directory((paf + "Manga"));
+        std::filesystem::create_directory((paf + "Movies"));
         // fs::create_directory((paf + "BTS"));       // BTS is one of the best... fu if u don't like it, idc
         // fs::create_directory((pa + "BLACKPINK")); // hmm... I like BLACKPINK but not as much as BTS. Also fu if u don't like it, I still don't care
     }
-    choices = nullptr;
 }
 
 
@@ -78,19 +74,19 @@ bool createGen(const wxString& genName)
         return false;
     }
 
-    if (fs::exists((GV::consts::user_data_folder + GV::consts::fsep + gen_name))) {
+    if (std::filesystem::exists((uFolder + FSEP + gen_name))) {
         wxMessageBox("Genre Already Exists", "-_-");
         return false;
     }
 
-    fs::create_directory(GV::consts::user_data_folder + GV::consts::fsep + gen_name);
+    std::filesystem::create_directory(uFolder + FSEP + gen_name);
     return true;
 }
 
 bool createEntry(const wxString& entryName, const wxString& genName)
 {
     std::string entry_name = std::string(entryName.mb_str());
-    std::string paf = GV::consts::user_data_folder + GV::consts::fsep + std::string(genName.mb_str()) + GV::consts::fsep 
+    std::string paf = uFolder + FSEP + std::string(genName.mb_str()) + FSEP 
         + entry_name + ".baka";
 
     if (isspace(entry_name) || entry_name.length() == 0) {
@@ -98,7 +94,7 @@ bool createEntry(const wxString& entryName, const wxString& genName)
         return false;
     }
 
-    if (fs::exists(paf)) {
+    if (std::filesystem::exists(paf)) {
         wxMessageBox("Entry Already Exists", "-_-");
         return false;
     }
@@ -111,9 +107,9 @@ bool createEntry(const wxString& entryName, const wxString& genName)
 
 inline std::string getFrameTitle()
 {
-    std::ifstream file((prefFolder + FSEP + TIT_FILE))
+    std::ifstream file((PREF_FOLDER + FSEP + TIT_FILE));
     std::string str = "uMgr";
-    if (file && file.eof()) // if file opens & !mt can be spc
+    if (file && file.eof()) // if file opens & !mt, can be spc
         getline(file, str);
     return str;
 }
