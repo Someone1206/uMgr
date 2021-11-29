@@ -14,7 +14,7 @@ FirstSetup::FirstSetup(const wxString& thisPaf)
     :wxFrame(nullptr, wxID_ANY, "First Setup", wxPoint(), wxSize(), wxMINIMIZE_BOX | wxSYSTEM_MENU | wxCAPTION | wxCLOSE_BOX | wxCLIP_CHILDREN)
 {
     wxPanel* __p_pane = new wxPanel(this, 69); // the main parent panel
-    
+
     // the main parent sizer, only holds __p_pane
     wxBoxSizer* __p_sizer = new wxBoxSizer(wxVERTICAL);
     __p_sizer->Add(__p_pane, 1, wxEXPAND);
@@ -134,7 +134,7 @@ void FirstSetup::choice(wxCommandEvent& evt)
         // setting the path to exe folder if index is not 0
         if (paf_fr_data->GetSelection() != 0)
         {
-            do_smth = true;
+            change_folderPerm = true;
             uFolder = std::string(_this_paf.mb_str()) + FSEP + folderN + FSEP + GV::consts::uName;
             details->SetValue(("Your logs will be stored in the following directory:\n" + uFolder + "\n"
                 "( That's vulnerable to 侵入者! But I'll try my best to keep your privacy)"));
@@ -228,15 +228,14 @@ void FirstSetup::go(wxCommandEvent& evt)
 
 #if _WIN32
     {
-        std::wstring tmp(GV::consts::c_app_data.begin(), GV::consts::c_app_data.end());
-        LPCWSTR irdk = tmp.c_str();
-        CreateDirectory(irdk, nullptr);
+        LPCSTR irdk = GV::consts::c_app_data.c_str();
+        CreateDirectoryA(irdk, nullptr);
         // hide the directory
-        SetFileAttributes(irdk, FILE_ATTRIBUTE_HIDDEN);
+        SetFileAttributesA(irdk, FILE_ATTRIBUTE_HIDDEN);
     }
 #else
     // name itself hides it
-    mkdir(GV::consts::c_app_data);
+    mkdir(aFolder);
 #endif // _WIN32
 
     // create the initialized file

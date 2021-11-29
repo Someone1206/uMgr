@@ -44,5 +44,5 @@ public:
     
     wxDECLARE_EVENT_TABLE();
 
-    ~FirstSetup();
+    ~FirstSetup() {}
 };
