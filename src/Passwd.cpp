@@ -1,13 +1,14 @@
 #include "Passwd.h"
 #include "mainFrame.h"
 #include "ufw/GV.h"
-
+#include "ufw/init.h"
 
 wxBEGIN_EVENT_TABLE(Passwd,wxFrame)
     EVT_BUTTON(ID_B_RG, Passwd::_r_g)
     EVT_BUTTON(ID_CANC, Passwd::canc__)
     EVT_BUTTON(ID_F_PWD, Passwd::_f_pwd)
 wxEND_EVENT_TABLE()
+
 
 Passwd::Passwd(const wxString& title)
     :wxFrame(nullptr, 69, title, wxDefaultPosition, wxDefaultSize, wxCAPTION | wxMINIMIZE_BOX
@@ -29,7 +30,7 @@ Passwd::Passwd(const wxString& title)
     p_sizer->Add(pwd, 0.2, wxEXPAND | wxALL, 10);
 
     wxBoxSizer* btn_s = new wxBoxSizer(wxHORIZONTAL);
-    
+
     wxButton* レツゴ = new wxButton(__p_pane, ID_B_RG, "レツゴ～");     // :>
     wxButton* canc = new wxButton(__p_pane, ID_CANC, "Cancel -_-?");
     // wxButton* f_pwd = new wxButton(__p_pane, ID_F_PWD, "Forgot Password"); later
