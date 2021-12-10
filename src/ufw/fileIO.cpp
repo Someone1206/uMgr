@@ -6,7 +6,7 @@ inline void reportErr(std::string msg = "Error", std::string title = "Error", in
     wxMessageBox(msg, title, styles);
 }
 
-inline bool isspace(const std::string& string1)
+bool isspace(const std::string& string1)
 {
     unsigned int len = string1.length();
     for (unsigned int i = 0; i < len; ++i)
@@ -444,8 +444,7 @@ void writeToll(std::string& data, std::string& genre) {
     write_file(paf, data, genre, true);
 }
 
-template<typename Type_paf, typename Type_data>
-void writeFile(Type_paf paf, Type_data data, int option, const std::string& name)
+void writeFile(std::string paf, std::string& data, int option, std::string name)
 {
     namespace fs = std::filesystem;
     if ((option & Create) == Create)

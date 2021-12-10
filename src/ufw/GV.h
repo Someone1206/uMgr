@@ -36,39 +36,6 @@ namespace GV
 
 } // namespace GV
 
-std::string GV::getU_F_name()
-{
-#if _WIN32
-    TCHAR userPaf[MAX_PATH];
-    SHGetFolderPath(nullptr, CSIDL_PROFILE, nullptr, 0, userPaf);
-    GV::consts::uPaf = userPaf;
-    // set user path
-    std::string temp = GV::consts::uPaf.string();
-    int index = 0, len = temp.length();
-    for (int i = 0; i < len; i++)
-    {
-        if (temp.at(i) == GV::consts::fsep)
-            index = i;
-    }
-    return temp.substr(index + 1);
-    // get user folder name
-#else
-    const char *homedir;
-    if ((homedir = getenv("HOME")) == NULL) 
-        homedir = getpwuid(getuid())->pw_dir;
-    GV::consts::uPaf = homedir;
-    // set user path
-    std::string temp = GV::consts::uPaf.string();
-    int index = 0, len = temp.length();
-    for (int i = 0; i < len; i++)
-    {
-        if (temp.at(i) == GV::consts::fsep)
-            index = i;
-    }
-    return temp.substr(index + 1);
-    // return user name
-#endif // _WIN32
-}
 
 #define FSEP      GV::consts::fsep
 #define folderN   "uMgrData"

@@ -11,55 +11,62 @@ public:
 
     wxColor* theme = nullptr;
 
+    void add_elements(std::string*& str, std::ifstream& file2read);
+
 private:
     bool _isLog = true, _allLog = false;
     ReadOptions fileRop = Anime;
-    wxString* genres = nullptr;
+    std::string* genres = nullptr;
 
     // buttons for log
     wxButton* lastLogs = nullptr;
     wxButton* allLogs = nullptr;
 
     // Controls that'll never change
+    // wxBoxSizer* r_btn_sizer = nullptr;
     wxPanel* __p_pane = nullptr;
-    wxBoxSizer* p_sizer = nullptr;
-    wxBoxSizer* l_sizer = nullptr;
-    wxBoxSizer* r_sizer = nullptr;
-    wxBoxSizer* r_btn_sizer = nullptr;
+    wxBoxSizer* __p_sizer = nullptr;
+    wxBoxSizer* grp_sizer = nullptr;
     wxTextCtrl* logs = nullptr;
-    wxChoice* list = nullptr;
+    wxComboBox* gen_cbox = nullptr;
 
     // menu stuffs
     wxMenuBar* mbar = nullptr;
-	wxMenu* __add__ = nullptr;
-    wxMenu* sett = nullptr;
-    wxMenu* abt = nullptr;
-    wxMenu* quit = nullptr;
+    wxMenu* __add__ = nullptr;
 
     //
     wxListBox* entries = nullptr;
     wxButton* addLog = nullptr;
     wxString* entryList = nullptr;
     std::string* entryFP = nullptr;
+    
 
-    // the other needed classes and windows
-    SetMgr* setMgr = nullptr;
-    About* about = nullptr;
-    AddLog* __addLog = nullptr;
+    inline void create_frame();
+
 
     // functions needed
     void lastLogsS(wxCommandEvent& evt);
+    // when last logs is clicked
     void allLogsS(wxCommandEvent& evt);
+    // when all logs is clicked
     void onAbout(wxCommandEvent& evt);
+    // when about is clicked
     void onExit(wxCommandEvent& evt);
+    // on exit
     void onSet(wxCommandEvent& evt);
+    // when preferences is clicked
 
     void choice(wxCommandEvent& evt);
+    // when an choice in the combobox is clicked
     void entryChoice(wxCommandEvent& evt);
+    // when an entry is clicked
     void _addLog_(wxCommandEvent& evt);
+    // on add log
 
     void genAdd(wxCommandEvent& evt);
+    // on add genre/group
     void entryAdd(wxCommandEvent& evt);
+    // on add entry
 
     wxDECLARE_EVENT_TABLE();
 

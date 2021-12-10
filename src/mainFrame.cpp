@@ -119,7 +119,7 @@ inline void mainFrame::create_frame()
 
     // add combobox
     l_sizer->Add(gen_cbox, 0.5, wxEXPAND | wxALL | wxALIGN_TOP, 15);
-    entries = new wxListBox(__p_pane, ID_E_LIST, wxDefaultPosition, wxDefaultSize, 1, noEntries);
+    entries = new wxListBox(__p_pane, ID_E_LIST, wxDefaultPosition, wxDefaultSize, 1, nullptr);
     wxBoxSizer* btn_sizer = new wxBoxSizer(wxVERTICAL);
     wxButton* btn_add_log = new wxButton(__p_pane, ID_ADDLOG, "Add Log");
     btn_sizer->Add(btn_add_log, 1, wxEXPAND | wxALL, 10);
