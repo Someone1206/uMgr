@@ -14,8 +14,8 @@
 // a collection of all the global variables to be used
 namespace GV
 {
-    // return the user folder name and updates the user folder path
-    std::string getU_F_name();
+    // set the user folder name and updates the user folder path
+    void getU_F_name();
 
     namespace consts
     {
@@ -26,7 +26,7 @@ namespace GV
         // stores the user folder name
         extern std::string uName;
         // stores the path where the setting, pwd and others are stored in the user home dir
-        extern std::string c_app_data;
+        // extern std::string c_app_data;
         // stores the path where the user stores their data
         extern std::string user_data_folder;
         // stores the path of preferences
@@ -34,17 +34,20 @@ namespace GV
 
     } // namespace consts
 
+    extern char fsep;
+
+    extern std::string user_folder;
+
 } // namespace GV
 
 
 #define FSEP      GV::consts::fsep
 #define folderN   "uMgrData"
-#define uFolder   GV::consts::user_data_folder
-#define aFolder   GV::consts::c_app_data
+#define USER_DATA   GV::consts::user_data_folder
 #define uPAF      GV::consts::uPaf
 
 #define PWD_FILE       "pwd.hentai"                  // name of password file, (if it changes any day)
-#define PREF_FILE      "preferences.hentai"          // file of bool values (too long to write every where)
+#define PREF_FILE      "Preferences.hentai"          // file of bool values (too long to write every where)
 #define TIT_FILE       "title.hentai"                // if i wish to change it any day
 #define PREF_FOLDER    GV::consts::user_preferences  // i'm lazy
 // fook i'm tired with dat dot
