@@ -1,29 +1,23 @@
 #pragma once
 #include <wx/wx.h>
-#include <fstream>
 
 class Passwd
-    : public wxFrame
+	:public wxFrame
 {
+	enum {
+		ID_PWD_TXT,
+		ID_GO_BTN
+	};
+
+	wxTextCtrl* password = nullptr;
+
 public:
-    Passwd(const wxString& title);
+	Passwd(std::string title);
 
-private:
-    wxTextCtrl* pwd = nullptr;
+	void OnGo(wxCommandEvent& evt);
 
-    void _r_g(wxCommandEvent& evt);
-    void canc__(wxCommandEvent& evt);
-    void _f_pwd(wxCommandEvent& evt);
+	~Passwd() {}
 
-    ~Passwd();
-
-    enum 
-    {
-        ID_B_RG,
-        ID_CANC,
-        ID_F_PWD,
-        ID_PWD
-    };
-    wxDECLARE_EVENT_TABLE();
+	wxDECLARE_EVENT_TABLE();
 };
 

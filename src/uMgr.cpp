@@ -4,7 +4,7 @@
 #include <fstream>
 #include <sstream>
 #include "ufw/init.h"
-
+#include "Passwd.h"
 
 namespace GV
 {
@@ -76,7 +76,7 @@ class uMgr
     std::string currentTitle,
         // custom title of the application 
         grpIndexPath;
-    // path to frp index file...
+    // path to grp index file...
 public:
     virtual bool OnInit();
 
@@ -98,7 +98,18 @@ bool uMgr::OnInit() {
 
     InitApp();
     
-    // TODO: Create Password manager
+    // TODO: Create MainWindow
+
+
+    if (
+        std::filesystem::exists((GV::user_folder + GV::fsep + "Password.baka")) &&
+        (!std::ifstream((GV::user_folder + GV::fsep + "Password.baka")).eof())
+        )
+    {
+        Passwd* pswd = new Passwd("Authentication");
+        pswd->Center(wxBOTH);
+        pswd->Show();
+    }
 
     //if (!std::filesystem::exists((USER_DATA + FSEP + "initialised.baka")))
     //{
@@ -120,7 +131,7 @@ bool uMgr::OnInit() {
     //    im_tired->Show();
     //}
 
-    return false;
+    return true;
 }
 
 void uMgr::InitApp() {
