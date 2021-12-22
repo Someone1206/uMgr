@@ -1,14 +1,15 @@
 #include <fstream>
 #include "Passwd.h"
 #include "ufw/GV.h"
+#include "MainWindow.h"
 
 wxBEGIN_EVENT_TABLE(Passwd, wxFrame)
 	EVT_BUTTON(Passwd::ID_GO_BTN, Passwd::OnGo)
 wxEND_EVENT_TABLE()
 
 
-Passwd::Passwd(std::string title)
-	:wxFrame(nullptr, 69, title)
+Passwd::Passwd(std::string title, const char* paf)
+	:wxFrame(nullptr, 69, title), grp_index_paf(paf)
 {
 	// frame design
 	wxPanel* __p_pane = new wxPanel(this);
@@ -34,11 +35,17 @@ void Passwd::OnGo(wxCommandEvent& evt)
 	if (password->GetValue() == pwdStr)
 	{
 		// go to mainframe
-		wxMessageBox("Password matches", "Password");
+		std::ofstream f(GV::user_folder + GV::fsep + "ggg.txt");
+		f << (char)1;
+		f.close();
+		wxMessageBox("Proceede", "?");
+		MainWindow* ffff = new MainWindow("uMgr", wxPoint(), grp_index_paf);
+		ffff->Show();
 		Destroy();
 	}
 	else
 	{
 		wxMessageBox("Passwords don't Match!", "Invalid Password");
+		password->SelectAll();
 	}
 }

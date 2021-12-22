@@ -87,13 +87,13 @@ void readFile(std::ifstream& file, ReadOptions options,
 void readTrackerFile(std::ifstream& file, 
     TrackerFileOptions tfo = LogList, wxTextCtrl* logDisp = nullptr,
     int history = 0, wxString* list = nullptr, 
-    std::string dest = uFolder, 
+    std::string dest = USER_DATA, 
     std::string* listFP = nullptr);
 
 /// <summary>
 /// To read settings from settings file
 /// </summary>
-/// <param name="file"> = Ptr to the file to read, nullptr for default -> Settings.baka in uFolder</param>
+/// <param name="file"> = Ptr to the file to read, nullptr for default -> Settings.baka in USER_DATA</param>
 /// <param name="choices"> = Array of choices, bool</param>
 std::optional<bool> readTrackerFile(std::ifstream& file, bool (&choices)[SET_NO]);
 
@@ -109,7 +109,7 @@ void writeFile(std::string paf, std::string& data, int option = Create, std::str
 
 
 // write to setting file
-void writeFile(bool(&choices)[SET_NO], std::string&& paf = (uFolder + FSEP + "Settings.baka"));
+void writeFile(bool(&choices)[SET_NO], std::string&& paf = (USER_DATA + FSEP + "Settings.baka"));
 
 /// <summary>
 /// index genre or entry

@@ -18,12 +18,12 @@ bool settings(bool(&choices)[SET_NO])
 void init(bool(&choices)[SET_NO])
 {
     {
-        std::string paf = aFolder + FSEP + "pafs.hentai";
+        std::string paf = USER_DATA + FSEP + "pafs.hentai";
         std::ifstream paf_file(paf);
-        getline(paf_file, uFolder);
+        getline(paf_file, USER_DATA);
     }
 
-    std::filesystem::create_directories(aFolder);
+    std::filesystem::create_directories(USER_DATA);
 
     {
         std::string paf = PREF_FOLDER + FSEP + PREF_FILE;
@@ -38,7 +38,7 @@ void init(bool(&choices)[SET_NO])
     // idk if this works but does it improve the memory management (by destroying[or whatever it's called] the string var)
 
     {
-        std::string paf = uFolder + FSEP + "LastLogs.baka";
+        std::string paf = USER_DATA + FSEP + "LastLogs.baka";
         if (!std::filesystem::exists(paf)) {
             std::ofstream file(paf);
             // file << (char)1;
@@ -46,7 +46,7 @@ void init(bool(&choices)[SET_NO])
         }
     }
     {
-        std::string paf = uFolder + FSEP + "AllLogs.hentai"; // 😅
+        std::string paf = USER_DATA + FSEP + "AllLogs.hentai"; // 😅
         if (!std::filesystem::exists(paf)) {
             std::ofstream file(paf);
             // file << (char)1;
@@ -55,7 +55,7 @@ void init(bool(&choices)[SET_NO])
     }
 
     if (choices[0]) {
-        std::string paf = uFolder + FSEP;
+        std::string paf = USER_DATA + FSEP;
         std::filesystem::create_directory((paf + "Anime"));
         std::filesystem::create_directory((paf + "Manga"));
         std::filesystem::create_directory((paf + "Movies"));
@@ -74,19 +74,19 @@ bool createGen(const wxString& genName)
         return false;
     }
 
-    if (std::filesystem::exists((uFolder + FSEP + gen_name))) {
+    if (std::filesystem::exists((USER_DATA + FSEP + gen_name))) {
         wxMessageBox("Genre Already Exists", "-_-");
         return false;
     }
 
-    std::filesystem::create_directory(uFolder + FSEP + gen_name);
+    std::filesystem::create_directory(USER_DATA + FSEP + gen_name);
     return true;
 }
 
 bool createEntry(const wxString& entryName, const wxString& genName)
 {
     std::string entry_name = std::string(entryName.mb_str());
-    std::string paf = uFolder + FSEP + std::string(genName.mb_str()) + FSEP 
+    std::string paf = USER_DATA + FSEP + std::string(genName.mb_str()) + FSEP 
         + entry_name + ".baka";
 
     if (isspace(entry_name) || entry_name.length() == 0) {

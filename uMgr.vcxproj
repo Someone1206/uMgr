@@ -163,12 +163,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\MainWindow.cpp" />
     <ClCompile Include="src\Passwd.cpp" />
     <ClCompile Include="src\ufw\fileIO.cpp" />
     <ClCompile Include="src\ufw\init.cpp" />
     <ClCompile Include="src\uMgr.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\MainWindow.h" />
     <ClInclude Include="src\Passwd.h" />
     <ClInclude Include="src\ufw\GV.h" />
     <ClInclude Include="src\ufw\fileIO.h" />

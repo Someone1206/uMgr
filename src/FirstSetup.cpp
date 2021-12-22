@@ -216,14 +216,14 @@ void FirstSetup::go(wxCommandEvent& evt)
         __a_pwd = 1;
     }
     // if password already exists, 
-    else if (std::filesystem::exists((aFolder + FSEP + "pwd.hentai")))
+    else if (std::filesystem::exists((APP_DATA + FSEP + "pwd.hentai")))
     {
         int revive = wxMessageBox("Revive Previous Password?", 
             "Seems like you already had setup this app and also set a password. Wanna revive that?",
             wxYES_NO, this);
         // delete it
         if (revive != wxYES)
-            std::filesystem::remove((aFolder + FSEP + "pwd.hentai"));
+            std::filesystem::remove((APP_DATA + FSEP + "pwd.hentai"));
     }
 
 #if _WIN32
@@ -235,23 +235,23 @@ void FirstSetup::go(wxCommandEvent& evt)
     }
 #else
     // name itself hides it
-    mkdir(aFolder);
+    mkdir(APP_DATA);
 #endif // _WIN32
 
     // create the initialized file
-    std::ofstream file((aFolder + FSEP + "initialised.baka"));
+    std::ofstream file((APP_DATA + FSEP + "initialised.baka"));
     file.close();
 
     if (__a_pwd)
     {
         // stuff in the password into the file
-        file.open((aFolder + FSEP + "pwd.hentai"));
+        file.open((APP_DATA + FSEP + "pwd.hentai"));
         file << std::string(pwd->GetValue().mb_str());
         file.close();
     }
 
     // stuff in the folder where to dave logs
-    file.open((aFolder + FSEP + "pafs.hentai"));
+    file.open((APP_DATA + FSEP + "pafs.hentai"));
     file << uFolder;
     file.close();
     // create the folder

@@ -11,8 +11,10 @@ class Passwd
 
 	wxTextCtrl* password = nullptr;
 
+	const char* grp_index_paf;
+
 public:
-	Passwd(std::string title);
+	Passwd(std::string title, const char* paf);
 
 	void OnGo(wxCommandEvent& evt);
 

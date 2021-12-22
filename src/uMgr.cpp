@@ -106,7 +106,7 @@ bool uMgr::OnInit() {
         (!std::ifstream((GV::user_folder + GV::fsep + "Password.baka")).eof())
         )
     {
-        Passwd* pswd = new Passwd("Authentication");
+        Passwd* pswd = new Passwd("Authentication", grpIndexPath.c_str());
         pswd->Center(wxBOTH);
         pswd->Show();
     }

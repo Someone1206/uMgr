@@ -415,7 +415,7 @@ void write_file(std::string& paf, std::string& data, std::string& xtra, bool isL
 
 // write to all logs
 void writeToal(std::string& data, std::string& genre) {
-    std::string paf = uFolder + FSEP + "AllLogs.hentai";
+    std::string paf = USER_DATA + FSEP + "AllLogs.hentai";
     // write to user's data folder
     {
         std::ifstream fileR(paf);
@@ -431,7 +431,7 @@ void writeToal(std::string& data, std::string& genre) {
 
 // write to last logs
 void writeToll(std::string& data, std::string& genre) {
-    std::string paf = uFolder + FSEP + "LastLogs.baka";
+    std::string paf = USER_DATA + FSEP + "LastLogs.baka";
     // write to users data folder
     {
         std::ifstream fileR(paf);
