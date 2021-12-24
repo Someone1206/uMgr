@@ -27,20 +27,30 @@ About::About(HWND parent, const Size& _size)
                         " in an Anime/Series.\r\n Also it keeps these logs kinda safe(so don't feel"
                         " unsafe storing those Ero-Anime stuffs...)";
 
-    txtArea = new TxtBox(this->hWnd, txt, Point(), Size(), ID_TXT, 
+    txtArea = new TxtBox(this->hWnd, txt, Point(10, 10), Size(size.x - 25, size.y - 25), ID_TXT, 
         ES_MULTILINE | WS_VSCROLL | ES_READONLY | ES_CENTER
     );
+    Size windowSize;
+    {
+        RECT rect;
+        GetClientRect(this->hWnd, &rect);
+        windowSize = Size(rect.right, rect.bottom);
+    }
+    txtArea->SetPercent(windowSize);
 }
 
 LRESULT About::HandleMessages(UINT msg, WPARAM wParam, LPARAM lParam)
 {
+    Size windowSizeC;
+    {
+        RECT rect;
+        GetClientRect(this->hWnd, &rect);
+        windowSizeC = Size(rect.right, rect.bottom);
+    }
     switch (msg)
     {
     case WM_SIZE:
-        txtArea->Resize(
-            Size(LOWORD(lParam) - 10, HIWORD(lParam) - 20),
-            Point(10, 10)
-        );
+        txtArea->Resize(windowSizeC, txtArea->Position);
         break;
     case WM_PAINT:
     {

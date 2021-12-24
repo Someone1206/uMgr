@@ -3,6 +3,8 @@
 #include "ComboBox.h"
 #include "About.h"
 #include <fstream>
+#include <iostream>
+
 
 #define normWinStyle WS_CAPTION | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_SYSMENU
 
@@ -18,6 +20,7 @@ private:
     HMENU menu_abt;
     ComboBox* genres = nullptr;
     std::string* paf_list;
+
 
     Button* last10logs = nullptr, * allLogs = nullptr, * addLog = nullptr;
 
@@ -37,12 +40,23 @@ public:
         :Window<MainWindow>(nullptr, "Useless Manger", -1, Point(), Size(640, 480),
         WS_OVERLAPPEDWINDOW)
     {
+        Size sizeThis_start;
+        {
+            RECT rcClient;
+            GetClientRect(this->hWnd, &rcClient);
+            sizeThis_start = Size(rcClient.right, rcClient.bottom);
+        }
         last10logs = new Button(hWnd, BTN_LL, "Last 10 Logs", Point(210, 12), Size(170, 40));
         allLogs = new Button(this->hWnd, BTN_AL, "All Logs", Point(430, 15), Size(170, 40));
         addLog = new Button(this->hWnd, BTN_ADD, "Add Log", Point(), Size(0, 0));
         addLog->Show(0);
 
         genres = new ComboBox(this->hWnd, Point(10, 20), Size(150, -1), CB_GEN);
+        
+        genres->SetPercent(sizeThis_start);
+        last10logs->SetPercent(sizeThis_start);
+        allLogs->SetPercent(sizeThis_start);
+        addLog->SetPercent(sizeThis_start);
         {
             genres->Add("Logs");
             std::ifstream file(("uMgrData\\GenreIndex.baka"));
@@ -73,6 +87,9 @@ public:
         SetMenu(hWnd, menuBar);
     }
 
+    // cant make it mo'e messier
+    void ResizeWindows(LPARAM lParam);
+
 
     LRESULT HandleMessages(UINT msg, WPARAM wParam, LPARAM lParam)
     {
@@ -93,15 +110,17 @@ public:
             if (LOWORD(wParam) == M_QUIT)
             {
                 bool res = MessageBox(this->hWnd, "Wanna Rully Quit?\n何で？", "エーーー",
-                    MB_OKCANCEL | MB_ICONWARNING
-                );
-                if (res)
+                    MB_YESNO | MB_ICONQUESTION | MB_DEFBUTTON1
+                ) - 6; // idyes == 6, idno == 7
+                if (!res) {
+                    this->Show(false);
                     PostQuitMessage(this->returnValue);
+                }
                 break;
             }
             else if (LOWORD(wParam) == M_ABT)
             {
-                About* abt = new About(this->hWnd, Size(300, 150));
+                About* abt = new About(this->hWnd, Size(400, 250));
                 abt->Show();
             }
             else if (HIWORD(wParam) == CBN_SELCHANGE)
@@ -125,11 +144,6 @@ public:
                         AppendMenu(menu_add, MF_ENABLED, M_ADD_LOG, "Add Log");
                         AppendMenu(menu_add, MF_ENABLED, M_ADD_GEN, "Add Genre");
 
-                        addLog->Resize(
-                            Size(last10logs->size.x + allLogs->size.x,
-                                last10logs->size.y), 
-                            Point(last10logs->Position + Point(10, 0))
-                        );
                         last10logs->Show(0);
                         allLogs->Show(0);
                         addLog->Show();
@@ -141,12 +155,26 @@ public:
                 }
             }
             break;
+        case WM_SIZE:
+            ResizeWindows(lParam);
+            break;
         }
 
         return DefWindowProc(hWnd, msg, wParam, lParam);
     }
 };
 
+void MainWindow::ResizeWindows(LPARAM lParam) {
+    Size sizeThis;
+    {
+        RECT rcClient;
+        GetClientRect(this->hWnd, &rcClient);
+        sizeThis = Size(rcClient.right, rcClient.bottom);
+    }
+    genres->Resize(sizeThis);
+    last10logs->Resize(sizeThis);
+    allLogs->Resize(sizeThis);
+}
 
 int CALLBACK WinMain(
     HINSTANCE hInst,
@@ -155,6 +183,8 @@ int CALLBACK WinMain(
     int       nCmdShow
 )
 {
+    std::cout << sizeof(MainWindow) << '\n';
+
     MainWindow* window = new MainWindow();
     window->Show();
 
